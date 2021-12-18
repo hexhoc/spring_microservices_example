@@ -13,8 +13,8 @@ application will remain in place, the application itself will be broken down fro
 smaller microservice design, whose pieces can be deployed independently to the cloud. The replatforming involved with
 O-stock can be a “make or break” moment for the company.
 
-development step by step
-
+## development step by step
+### license service
 1. Create new module "license server" with dependencies:
     - Actuator
     - Web
@@ -35,4 +35,25 @@ development step by step
    3. Create files messages_en.properties and messages_ru.properties in resource folder
    4. Inject MessageSource in LicenseService and use it 
 6. Implementing Spring HATEOAS to display related links
-7. 
+7. The DevOps story: Building for the rigors of runtime
+   1. Service assembly: Packaging and deploying your microservices.
+   
+      `./gradlew assemble && java -jar build/libs/licensing-service-0.0.1-SNAPSHOT.jar` 
+   2. Create dockerfile
+   
+      `FROM openjdk:17
+      ARG JAR_FILE=build/libs/*.jar
+      COPY ${JAR_FILE} app.jar
+      ENTRYPOINT ["java","-jar","/app.jar"]`
+      
+      or using gradle
+
+      `./gradlew bootBuildImage --imageName=ostock/licensing-service:0.0.1-SNAPSHOT`
+   3. Pack our project in docker image and try to start
+   
+      `docker build --build-arg JAR_FILE=build/libs/*.jar -t ostock/licensing-service:0.0.1-SNAPSHOT .`
+      
+      `docker run --name licensing-service -p 8080:8080 ostock/licensing-service:0.0.1-SNAPSHOT`
+   
+   4. Create docker-compose.yml and try to start it `docker-compose up`
+   5. 
