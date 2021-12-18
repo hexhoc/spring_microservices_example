@@ -2,9 +2,12 @@ package com.optimagrowth.license.controller;
 
 import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.service.LicenseService;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 // Tells Spring bot that this is a REST based service,
 // and it will automatically serialize/deserialize service request/response via JSON.
@@ -41,25 +44,28 @@ public class LicenseController {
     public ResponseEntity<String> updateLicense(
             @PathVariable("organizationId") String organizationId,
             //Maps the HTTP request body to a License object
-            @RequestBody License request) {
+            @RequestBody License request,
+            @RequestHeader(value = "Accept-Language", required = false) Locale local) {
 
-        return ResponseEntity.ok(licenseService.updateLicense(request, organizationId));
+        return ResponseEntity.ok(licenseService.updateLicense(request, organizationId, local));
     }
 
     @PostMapping
     public ResponseEntity<String> createLicense(
             @PathVariable("organizationalId") String organizationId,
-            @RequestBody License request) {
+            @RequestBody License request,
+            @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
-        return ResponseEntity.ok(licenseService.createLicense(request, organizationId));
+        return ResponseEntity.ok(licenseService.createLicense(request, organizationId, locale));
     }
 
-    @DeleteMapping(value = "/{licenseId}")
+    @DeleteMapping(value = "/{licenseId}", produces = "application/json;charset=UTF-8")
     public ResponseEntity<String> deleteLicense(
             @PathVariable("organizationId") String organizationId,
-            @PathVariable("licenseId") String licenseId) {
+            @PathVariable("licenseId") String licenseId,
+            @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
-        return ResponseEntity.ok(licenseService.deleteLicense(licenseId, organizationId));
+        return ResponseEntity.ok(licenseService.deleteLicense(licenseId, organizationId, locale));
     }
 
 }

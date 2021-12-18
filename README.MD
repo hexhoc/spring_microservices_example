@@ -29,4 +29,9 @@ development step by step
        - v1/organization/{organizationId}/license/{licenseId} - DELETE license 
 3. Create model class com/optimagrowth/license/model/License.java. Simple POJO
 4. Create service class com/optimagrowth/license/service/LicenseService.java
-5. 
+5. Create bean to work with our application in different language:
+   1. LocaleResolver localeResolver()
+   2. ResourceBundleMessageSource messageSource()
+   3. Create files messages_en.properties and messages_ru.properties in resource folder
+   4. Inject MessageSource in LicenseService and use it 
+6. 
