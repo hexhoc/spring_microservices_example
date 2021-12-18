@@ -2,12 +2,15 @@ package com.optimagrowth.license.controller;
 
 import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.service.LicenseService;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
+
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 // Tells Spring bot that this is a REST based service,
 // and it will automatically serialize/deserialize service request/response via JSON.
@@ -19,7 +22,7 @@ import java.util.Locale;
 @RequestMapping(value = "v1/organization/{organizationId}/license")
 public class LicenseController {
 
-    private LicenseService licenseService;
+    private final LicenseService licenseService;
 
     @Autowired
     public LicenseController(LicenseService licenseService) {
@@ -30,10 +33,25 @@ public class LicenseController {
     @GetMapping(value = "/{licenseId}")
     //Maps two parameters (organizationId and licenseId) from URL to @GetMapping's parameters
     public ResponseEntity<License> getLicense(
-            @PathVariable("organizationId") String organizationalId,
+            @PathVariable("organizationId") String organizationId,
             @PathVariable("licenseId") String licenseId) {
 
-        License license = licenseService.getLicense(licenseId, organizationalId);
+        License license = licenseService.getLicense(licenseId, organizationId);
+
+        //HATEOAS
+        license.add(linkTo(methodOn(LicenseController.class)
+                        .getLicense(organizationId, license.getLicenseId()))
+                        .withSelfRel(),
+                linkTo(methodOn(LicenseController.class)
+                        .createLicense(organizationId, license, null))
+                        .withRel("createLicense"),
+                linkTo(methodOn(LicenseController.class)
+                        .updateLicense(organizationId, license, null))
+                        .withRel("updateLicense"),
+                linkTo(methodOn(LicenseController.class)
+                        .deleteLicense(organizationId, license.getLicenseId(), null))
+                        .withRel("deleteLicense"));
+
 //        The ResponseEntity represents the entire HTTP response, including the status code, the headers, and the
 //        body. In the previous listing, it allows us to return the License object as the body and
 //        the 200(OK) status code as the HTTP response of the service.
@@ -52,7 +70,7 @@ public class LicenseController {
 
     @PostMapping
     public ResponseEntity<String> createLicense(
-            @PathVariable("organizationalId") String organizationId,
+            @PathVariable("organizationId") String organizationId,
             @RequestBody License request,
             @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 

@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-hateoas
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.6.1'
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     annotationProcessor  group: 'org.projectlombok', name: 'lombok', version: '1.18.22'

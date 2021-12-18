@@ -34,4 +34,5 @@ development step by step
    2. ResourceBundleMessageSource messageSource()
    3. Create files messages_en.properties and messages_ru.properties in resource folder
    4. Inject MessageSource in LicenseService and use it 
-6. 
+6. Implementing Spring HATEOAS to display related links
+7. 
