@@ -1,9 +1,25 @@
 version: '3'
 
 services:
-  licensing-service:
+#  Applies a label to each service launched. This becomes the DNS entry
+#  for the Docker instance when it starts, which is how other services access it.
+  licensingservice:
+#    Docker Compose first tries to find the target image to be started in the local Docker
+#    repository. If it can’t find it, it checks the central Docker Hub (http://hub.docker.com)
     image: ostock/licensing-service:0.0.1-SNAPSHOT
+#    Defines the port numbers on the started Docker container, which are exposed to the outside world
     ports:
       - "8080:8080"
     environment:
+#      - Passes along environment variables to the starting Docker image. In this case, sets the
+#        SPRING_PROFILES_ACTIVE environment variable on the starting Docker image.
       - "SPRING_PROFILES_ACTIVE=dev"
+    networks:
+      backend:
+        aliases:
+#          Specifies the alternative hostname for the service on the network
+          - "licenseservice"
+networks:
+#  Creates a custom network named backend with the default type bridge
+  backend:
+    driver: bridge
