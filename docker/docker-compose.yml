@@ -19,6 +19,15 @@ services:
         aliases:
 #          Specifies the alternative hostname for the service on the network
           - "licenseservice"
+  configserver:
+    image: ostock/configserver:0.0.1-SNAPSHOT
+    ports:
+      - "8071:8071"
+    networks:
+      backend:
+        aliases:
+          - "configserver"
+
 networks:
 #  Creates a custom network named backend with the default type bridge
   backend:

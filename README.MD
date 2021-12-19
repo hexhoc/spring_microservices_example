@@ -19,6 +19,11 @@ O-stock can be a “make or break” moment for the company.
     - Actuator
     - Web
     - lombok
+    - HATEOAS (this service return link how we can work with resource (GET, CREATE, UPDATE, DELETE))
+    - spring-cloud-starter-config (client for work with cloud config server)
+    - spring-boot-starter-data-jpa
+    - postgresql
+    - spring-cloud-starter-bootstrap (for use bootstrap.properties)
 2. Create class com/optimagrowth/license/controller/LicenseController.java with @RestController and @RequestMapping(
    value = "v1/organization/{organizationId}/license")
 
@@ -56,4 +61,28 @@ O-stock can be a “make or break” moment for the company.
       `docker run --name licensing-service -p 8080:8080 ostock/licensing-service:0.0.1-SNAPSHOT`
    
    4. Create docker-compose.yml and try to start it `docker-compose up`
-   5. 
+8. Create default application.properties in which to specify connect to config server and active profile
+9. We can compile jar with override properties using next command:
+   `java -Dspring.cloud.config.uri=http://localhost:8071
+   -Dspring.profiles.active=dev
+   -jar target/licensing-service-0.0.1-SNAPSHOT.jar`
+10. You can check all environment variables through actuator `http://localhost:8080/actuator/env`.
+
+
+### Config server
+
+1. Create new spring boot application (config server) with following dependencies:
+   1. Actuator
+   2. Config server
+   3. spring-cloud-starter-bootstrap
+2. Create bootstrap.properties
+3. Add @EnableConfigServer annotation in ConfigurationServerApplication class
+4. Create config for licensing-service:
+   1. licensing-service.properties
+   2. licensing-service-dev.properties
+   3. licensing-service-prod.properties
+
+   Spring framework implements a hierarchical mechanism for properties. First applied licensing-service.properties and
+   after then licensing-service-dev.properties
+5. Create Dockerfile and edit docker-compose.yml for new image
+6. Check it service is work `http://localhost:8071/licensing-service/default`
