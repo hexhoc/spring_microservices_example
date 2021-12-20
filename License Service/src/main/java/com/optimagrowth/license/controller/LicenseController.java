@@ -2,6 +2,7 @@ package com.optimagrowth.license.controller;
 
 import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.service.LicenseService;
+import com.optimagrowth.license.service.impl.LicenseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class LicenseController {
     private final LicenseService licenseService;
 
     @Autowired
-    public LicenseController(LicenseService licenseService) {
+    public LicenseController(LicenseServiceImpl licenseService) {
         this.licenseService = licenseService;
     }
 
@@ -34,23 +35,17 @@ public class LicenseController {
     //Maps two parameters (organizationId and licenseId) from URL to @GetMapping's parameters
     public ResponseEntity<License> getLicense(
             @PathVariable("organizationId") String organizationId,
-            @PathVariable("licenseId") String licenseId) {
+            @PathVariable("licenseId") String licenseId,
+            @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
-        License license = licenseService.getLicense(licenseId, organizationId);
+        License license = licenseService.getLicense(licenseId, organizationId, locale);
 
         //HATEOAS
-        license.add(linkTo(methodOn(LicenseController.class)
-                        .getLicense(organizationId, license.getLicenseId()))
-                        .withSelfRel(),
-                linkTo(methodOn(LicenseController.class)
-                        .createLicense(organizationId, license, null))
-                        .withRel("createLicense"),
-                linkTo(methodOn(LicenseController.class)
-                        .updateLicense(organizationId, license, null))
-                        .withRel("updateLicense"),
-                linkTo(methodOn(LicenseController.class)
-                        .deleteLicense(organizationId, license.getLicenseId(), null))
-                        .withRel("deleteLicense"));
+        license.add(
+                linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId(), locale)).withSelfRel(),
+                linkTo(methodOn(LicenseController.class).createLicense(license)).withRel("createLicense"),
+                linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
+                linkTo(methodOn(LicenseController.class).deleteLicense(license.getLicenseId(), locale)).withRel("deleteLicense"));
 
 //        The ResponseEntity represents the entire HTTP response, including the status code, the headers, and the
 //        body. In the previous listing, it allows us to return the License object as the body and
@@ -59,31 +54,26 @@ public class LicenseController {
     }
 
     @PutMapping
-    public ResponseEntity<String> updateLicense(
-            @PathVariable("organizationId") String organizationId,
+    public ResponseEntity<License> updateLicense(
             //Maps the HTTP request body to a License object
-            @RequestBody License request,
-            @RequestHeader(value = "Accept-Language", required = false) Locale local) {
+            @RequestBody License license) {
 
-        return ResponseEntity.ok(licenseService.updateLicense(request, organizationId, local));
+        return ResponseEntity.ok(licenseService.updateLicense(license));
     }
 
     @PostMapping
-    public ResponseEntity<String> createLicense(
-            @PathVariable("organizationId") String organizationId,
-            @RequestBody License request,
-            @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
+    public ResponseEntity<License> createLicense(
+            @RequestBody License license) {
 
-        return ResponseEntity.ok(licenseService.createLicense(request, organizationId, locale));
+        return ResponseEntity.ok(licenseService.createLicense(license));
     }
 
-    @DeleteMapping(value = "/{licenseId}", produces = "application/json;charset=UTF-8")
+    @DeleteMapping(value = "/{licenseId}")
     public ResponseEntity<String> deleteLicense(
-            @PathVariable("organizationId") String organizationId,
             @PathVariable("licenseId") String licenseId,
             @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
-        return ResponseEntity.ok(licenseService.deleteLicense(licenseId, organizationId, locale));
+        return ResponseEntity.ok(licenseService.deleteLicense(licenseId, locale));
     }
 
 }

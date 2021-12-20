@@ -1,57 +1,18 @@
 package com.optimagrowth.license.service;
 
+import com.optimagrowth.license.model.License;
 
+import java.util.Locale;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
+public interface LicenseService {
 
-import com.optimagrowth.license.config.ServiceConfig;
-import com.optimagrowth.license.model.License;
-import com.optimagrowth.license.repository.LicenseRepository;
+    License getLicense(String licenseId, String organizationId, Locale locale);
 
-@Service
-public class LicenseService {
+    License createLicense(License license);
 
-    @Autowired
-    MessageSource messages;
+    License updateLicense(License license);
 
-    @Autowired
-    private LicenseRepository licenseRepository;
+    String deleteLicense(String licenseId, Locale locale);
 
-    @Autowired
-    ServiceConfig config;
-
-
-    public License getLicense(String licenseId, String organizationId){
-        License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
-        if (null == license) {
-            throw new IllegalArgumentException(String.format(messages.getMessage("license.search.error.message", null, null),licenseId, organizationId));
-        }
-        return license.withComment(config.getProperty());
-    }
-
-    public License createLicense(License license){
-        license.setLicenseId(UUID.randomUUID().toString());
-        licenseRepository.save(license);
-
-        return license.withComment(config.getProperty());
-    }
-
-    public License updateLicense(License license){
-        licenseRepository.save(license);
-
-        return license.withComment(config.getProperty());
-    }
-
-    public String deleteLicense(String licenseId){
-        String responseMessage = null;
-        License license = new License();
-        license.setLicenseId(licenseId);
-        licenseRepository.delete(license);
-        responseMessage = String.format(messages.getMessage("license.delete.message", null, null),licenseId);
-        return responseMessage;
-
-    }
 }
