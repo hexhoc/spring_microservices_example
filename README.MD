@@ -78,6 +78,12 @@ O-stock can be a “make or break” moment for the company.
 12. You can check all environment variables through actuator `http://localhost:8080/actuator/env`.
 13. Add db/migration in resource and enable spring.flyway in properties
 
+### license service. Handle exception
+1. Add ExceptionController class. You can handle exceptions globally and centrally using classes annotated with @ControllerAdvice.
+2. Add ErrorMessage class. Instance of that class can contain our error with code, status and message
+3. Add RestErrorList class. This class extend ArrayList and contains list of ErrorMessage
+4. Add ResponseWrapper Class to wrap RestErrorList
+
 ### Config server
 
 1. Create new spring boot application (config server) with following dependencies:

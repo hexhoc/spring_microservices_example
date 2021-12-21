@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 //Maps to the database table
 @Table(name = "licenses")
+// HATEOAS. Extends from the RepresentationModel class to inherit the add() method. So once we create a link, we can easily set
+// that value to the resource representation without adding any new fields to it.
 public class License extends RepresentationModel<License> {
 
     @Id
