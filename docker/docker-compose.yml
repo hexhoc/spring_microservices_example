@@ -4,6 +4,7 @@ services:
   #  Applies a label to each service launched. This becomes the DNS entry
   #  for the Docker instance when it starts, which is how other services access it.
   licensingservice:
+    container_name: licensingservice
     #    Docker Compose first tries to find the target image to be started in the local Docker
     #    repository. If it can’t find it, it checks the central Docker Hub (http://hub.docker.com)
     image: ostock/licensing-service:0.0.1-SNAPSHOT
@@ -24,6 +25,7 @@ services:
           - "licenseservice"
 
   configserver:
+    container_name: configserver
     image: ostock/configserver:0.0.1-SNAPSHOT
     ports:
       - "8071:8071"
@@ -33,6 +35,7 @@ services:
           - "configserver"
 
   database:
+    container_name: database
     image: postgres:latest
     ports:
       - "5432:5432"
