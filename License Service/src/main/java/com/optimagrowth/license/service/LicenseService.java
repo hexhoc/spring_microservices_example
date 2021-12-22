@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface LicenseService {
 
-    License getLicense(String licenseId, String organizationId, Locale locale);
+    License getLicense(String licenseId, String organizationId, String clientType, Locale locale);
 
     License createLicense(License license);
 

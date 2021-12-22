@@ -26,6 +26,8 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.6.1'
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     implementation 'org.flywaydb:flyway-core'
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.0'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     annotationProcessor  group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

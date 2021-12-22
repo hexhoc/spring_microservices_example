@@ -1,6 +1,7 @@
 package com.optimagrowth.license.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "licenses")
 // HATEOAS. Extends from the RepresentationModel class to inherit the add() method. So once we create a link, we can easily set
 // that value to the resource representation without adding any new fields to it.
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class License extends RepresentationModel<License> {
 
     @Id
@@ -42,6 +44,14 @@ public class License extends RepresentationModel<License> {
     private LocalDateTime updatedAt;
     @Version
     private long version;
+    @Transient
+    private String organizationName;
+    @Transient
+    private String contactName;
+    @Transient
+    private String contactPhone;
+    @Transient
+    private String contactEmail;
 
     public License withComment(String comment){
         this.setComment(comment);

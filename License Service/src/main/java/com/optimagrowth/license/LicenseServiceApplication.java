@@ -2,9 +2,13 @@ package com.optimagrowth.license;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -16,6 +20,10 @@ import java.util.Locale;
 // Spring Boot Actuator offers a @RefreshScope annotation that allows a development team to access a /refresh endpoint that will force the
 // Spring Boot application to reread its application configuration.
 @RefreshScope
+@EnableDiscoveryClient
+//Feign – a declarative HTTP client developed by Netflix. Feign aims at simplifying HTTP API clients. Simply put, the
+//developer needs only to declare and annotate an interface while the actual implementation is provisioned at runtime
+@EnableFeignClients
 public class LicenseServiceApplication {
 //TODO Add tests
     public static void main(String[] args) {
@@ -46,5 +54,9 @@ public class LicenseServiceApplication {
         return messageSource;
     }
 
-
+    @LoadBalanced
+    @Bean
+    public RestTemplate getRestTemplate(){
+        return new RestTemplate();
+    }
 }

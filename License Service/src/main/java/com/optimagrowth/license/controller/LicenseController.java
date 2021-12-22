@@ -31,18 +31,19 @@ public class LicenseController {
     }
 
     //Get method to retrieve the license data
-    @GetMapping(value = "/{licenseId}")
+    @GetMapping(value = "/{licenseId}/{clientType}")
     //Maps two parameters (organizationId and licenseId) from URL to @GetMapping's parameters
     public ResponseEntity<License> getLicense(
             @PathVariable("organizationId") String organizationId,
             @PathVariable("licenseId") String licenseId,
+            @PathVariable("clientType") String clientType,
             @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
-        License license = licenseService.getLicense(licenseId, organizationId, locale);
+        License license = licenseService.getLicense(licenseId, organizationId, clientType, locale);
 
         //HATEOAS
         license.add(
-                linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId(), locale)).withSelfRel(),
+                linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId(),clientType, locale)).withSelfRel(),
                 linkTo(methodOn(LicenseController.class).createLicense(license)).withRel("createLicense"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
                 linkTo(methodOn(LicenseController.class).deleteLicense(license.getLicenseId(), locale)).withRel("deleteLicense"));
