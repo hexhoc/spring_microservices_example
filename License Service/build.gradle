@@ -28,6 +28,10 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.0'
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-loadbalancer
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-loadbalancer', version: '3.1.0'
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '3.1.0'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     annotationProcessor  group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

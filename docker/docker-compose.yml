@@ -35,6 +35,7 @@ services:
           - "configserver"
 
   eurekaserver:
+    container_name: eurekaserver
     image: ostock/eurekaserver:0.0.1-SNAPSHOT
     ports:
       - "8070:8070"
@@ -68,6 +69,7 @@ services:
           - "licenseservice"
 
   organizationservice:
+    container_name: organizationservice
     image: ostock/organization-service:0.0.1-SNAPSHOT
     environment:
       PROFILE: "dev"
@@ -78,7 +80,6 @@ services:
       - "8081:8081"
     networks:
       - backend
-
 
 networks:
   #  Creates a custom network named backend with the default type bridge
