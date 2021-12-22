@@ -85,6 +85,17 @@ O-stock can be a “make or break” moment for the company.
 3. Add RestErrorList class. This class extend ArrayList and contains list of ErrorMessage
 4. Add ResponseWrapper Class to wrap RestErrorList
 
+### Organization service
+1. Create new spring boot application (Organization service) with following dependencies:
+   - spring-boot-starter-actuator
+   - spring-cloud-starter-bootstrap
+   - spring-boot-starter-data-jpa
+   - spring-boot-starter-web
+   - spring-cloud-starter-config
+   - lombok
+   - postgresql
+
+
 ### Config server
 
 1. Create new spring boot application (config server) with following dependencies:
@@ -116,6 +127,7 @@ O-stock can be a “make or break” moment for the company.
    - spring-cloud-starter-loadbalancer
    - spring-cloud-starter-netflix-eureka-server
    - spring-cloud-starter-bootstrap
+2. Add @EnableEurekaServer annotation in EurekaServerApplication class
    
 
 ## Installation
