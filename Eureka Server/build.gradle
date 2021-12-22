@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Exec
+
 plugins {
     id 'org.springframework.boot' version '2.6.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -30,6 +32,11 @@ dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
+}
+
+task buildDockerImage (type: Exec) {
+    dependsOn build
+    commandLine "docker", "build", "-t", "ostock/$project.name:$version", "."
 }
 
 test {

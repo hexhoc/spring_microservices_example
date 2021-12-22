@@ -1,5 +1,6 @@
 # Spring microservices example
 
+
 This example demonstrate how we can build microservice project step by step.
 
 ### We use fictitious company **Optima Growth**
@@ -106,6 +107,18 @@ O-stock can be a “make or break” moment for the company.
    that’s used by the encrypter to encrypt a value and by the decrypter to decrypt a value.
 
    Now we can use http://localhost:8071/encrypt and http://localhost:8071/decrypt for our passwords
+
+### Eureka server (discovery server)
+
+1. Add new module spring boot with following dependencies:
+   - spring-boot-starter-web
+   - spring-cloud-starter-config
+   - spring-cloud-starter-loadbalancer
+   - spring-cloud-starter-netflix-eureka-server
+   - spring-cloud-starter-bootstrap
+   
+
+## Installation
 
 
 [comment]: <> (### Vault server)

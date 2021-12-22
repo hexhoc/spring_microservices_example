@@ -4,6 +4,7 @@ plugins {
     id 'java'
 }
 
+
 group = 'com.optimagrowth'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
@@ -30,6 +31,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+task buildDockerImage (type: Exec) {
+    dependsOn build
+    commandLine "docker", "build", "-t", "ostock/$project.name:$version", "."
 }
 
 test {

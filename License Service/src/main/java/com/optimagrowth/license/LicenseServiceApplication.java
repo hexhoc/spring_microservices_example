@@ -17,7 +17,7 @@ import java.util.Locale;
 // Spring Boot application to reread its application configuration.
 @RefreshScope
 public class LicenseServiceApplication {
-
+//TODO Add tests
     public static void main(String[] args) {
         SpringApplication.run(LicenseServiceApplication.class, args);
     }

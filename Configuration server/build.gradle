@@ -30,6 +30,11 @@ dependencyManagement {
     }
 }
 
+task buildDockerImage (type: Exec) {
+    dependsOn build
+    commandLine "docker", "build", "-t", "ostock/$project.name:$version", "."
+}
+
 test {
     useJUnitPlatform()
 }
