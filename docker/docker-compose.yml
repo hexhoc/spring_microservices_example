@@ -1,39 +1,6 @@
 version: '3'
 
 services:
-  #  Applies a label to each service launched. This becomes the DNS entry
-  #  for the Docker instance when it starts, which is how other services access it.
-  licensingservice:
-    container_name: licensingservice
-    #    Docker Compose first tries to find the target image to be started in the local Docker
-    #    repository. If it can’t find it, it checks the central Docker Hub (http://hub.docker.com)
-    image: ostock/licensing-service:0.0.1-SNAPSHOT
-    #    Defines the port numbers on the started Docker container, which are exposed to the outside world
-    ports:
-      - "8080:8080"
-    environment:
-      #      - Passes along environment variables to the starting Docker image. In this case, sets the
-      #        SPRING_PROFILES_ACTIVE environment variable on the starting Docker image.
-      - "SPRING_PROFILES_ACTIVE=dev"
-    depends_on:
-      - database
-      - configserver
-    networks:
-      backend:
-        aliases:
-          #          Specifies the alternative hostname for the service on the network
-          - "licenseservice"
-
-  configserver:
-    container_name: configserver
-    image: ostock/configserver:0.0.1-SNAPSHOT
-    ports:
-      - "8071:8071"
-    networks:
-      backend:
-        aliases:
-          - "configserver"
-
   database:
     container_name: database
     image: postgres:latest
@@ -56,6 +23,62 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  configserver:
+    container_name: configserver
+    image: ostock/configserver:0.0.1-SNAPSHOT
+    ports:
+      - "8071:8071"
+    networks:
+      backend:
+        aliases:
+          - "configserver"
+
+  eurekaserver:
+    image: ostock/eurekaserver:0.0.1-SNAPSHOT
+    ports:
+      - "8070:8070"
+    depends_on:
+      - database
+      - configserver
+    networks:
+      backend:
+        aliases:
+          - "eurekaserver"
+
+  licensingservice:
+    container_name: licensingservice
+    #    Docker Compose first tries to find the target image to be started in the local Docker
+    #    repository. If it can’t find it, it checks the central Docker Hub (http://hub.docker.com)
+    image: ostock/licensing-service:0.0.1-SNAPSHOT
+    #    Defines the port numbers on the started Docker container, which are exposed to the outside world
+    ports:
+      - "8080:8080"
+    environment:
+      #      - Passes along environment variables to the starting Docker image. In this case, sets the
+      #        SPRING_PROFILES_ACTIVE environment variable on the starting Docker image.
+      PROFILE: "dev"
+    depends_on:
+      - database
+      - configserver
+    networks:
+      backend:
+        aliases:
+          #          Specifies the alternative hostname for the service on the network
+          - "licenseservice"
+
+  organizationservice:
+    image: ostock/organization-service:0.0.1-SNAPSHOT
+    environment:
+      PROFILE: "dev"
+    depends_on:
+      - database
+      - configserver
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+
 
 networks:
   #  Creates a custom network named backend with the default type bridge

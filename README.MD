@@ -120,44 +120,8 @@ O-stock can be a “make or break” moment for the company.
 
 ## Installation
 
-
-[comment]: <> (### Vault server)
-
-[comment]: <> (Vault is a tool that allows us to securely access secrets. We can define secrets as any piece of information we want to)
-
-[comment]: <> (restrict or control access to, such as passwords, certificates, API keys, and so forth.)
-
-[comment]: <> (1. run next command: `docker run -d -p 8200:8200 --name vault -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot' -e 'VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200' vault`)
-
-[comment]: <> (   - **VAULT_DEV_ROOT_TOKEN_ID**—This parameter sets the ID of the generated root token. The root token is the initial access)
-
-[comment]: <> (   token to start configuring Vault. This sets the ID of the initial generated root token to a given value)
-
-[comment]: <> (   - **VAULT_DEV_LISTEN_ADDRESS**—This parameter sets the IP address and port of the development server listener; the default value is 0.0.0.0:8200.)
-
-[comment]: <> (2. Open vault by localhost:8200 log in using 'myroot')
-
-[comment]: <> (3. Create new engine )
-
-[comment]: <> (4. Select the generic KV)
-
-[comment]: <> (5. On Enable KV Secrets Engine page enter)
-
-[comment]: <> (    - Path: licensing-service)
-
-[comment]: <> (    - version: 2)
-
-[comment]: <> (6. Create secret)
-
-[comment]: <> (    - Path for this secret: default)
-
-[comment]: <> (    - Secret data)
-
-[comment]: <> (      - key: license.vault.property)
-
-[comment]: <> (      - value: Welcome to the vault)
-
-[comment]: <> (7. curl -X "GET" "http://localhost:8071/licensing-service/default" -H "X-Config-Token: myroot")
+1. Use `gradlew buildDockerImage` for each project
+2. cd docker/ and execute `docker-compose up` 
 
 
 
