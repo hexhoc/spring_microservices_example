@@ -1,13 +1,12 @@
 CREATE TABLE IF NOT EXISTS public.organizations
 (
     organization_id text COLLATE pg_catalog."default" NOT NULL,
-    name text COLLATE pg_catalog."default",
-    contact_name text COLLATE pg_catalog."default",
-    contact_email text COLLATE pg_catalog."default",
-    contact_phone text COLLATE pg_catalog."default",
+    name            text COLLATE pg_catalog."default",
+    contact_name    text COLLATE pg_catalog."default",
+    contact_email   text COLLATE pg_catalog."default",
+    contact_phone   text COLLATE pg_catalog."default",
     CONSTRAINT organizations_pkey PRIMARY KEY (organization_id)
 )
-
     TABLESPACE pg_default;
 
 ALTER TABLE public.organizations
@@ -16,19 +15,21 @@ ALTER TABLE public.organizations
 
 CREATE TABLE IF NOT EXISTS public.licenses
 (
-    license_id text COLLATE pg_catalog."default" NOT NULL,
+    license_id      text COLLATE pg_catalog."default" NOT NULL,
     organization_id text COLLATE pg_catalog."default" NOT NULL,
-    description text COLLATE pg_catalog."default",
-    product_name text COLLATE pg_catalog."default" NOT NULL,
-    license_type text COLLATE pg_catalog."default" NOT NULL,
-    comment text COLLATE pg_catalog."default",
+    description     text COLLATE pg_catalog."default",
+    product_name    text COLLATE pg_catalog."default" NOT NULL,
+    license_type    text COLLATE pg_catalog."default" NOT NULL,
+    comment         text COLLATE pg_catalog."default",
+    created_at      timestamp                         not null,
+    updated_at      timestamp                         not null,
+    version         bigint                            not null,
     CONSTRAINT licenses_pkey PRIMARY KEY (license_id),
     CONSTRAINT licenses_organization_id_fkey FOREIGN KEY (organization_id)
         REFERENCES public.organizations (organization_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
-
     TABLESPACE pg_default;
 
 ALTER TABLE public.licenses
@@ -36,8 +37,15 @@ ALTER TABLE public.licenses
 
 
 
-INSERT INTO public.organizations VALUES ('e6a625cc-718b-48c2-ac76-1dfdff9a531e', 'Ostock', 'Illary Huaylupo', 'illaryhs@gmail.com', '888888888');
-INSERT INTO public.organizations VALUES ('d898a142-de44-466c-8c88-9ceb2c2429d3', 'OptimaGrowth', 'Admin', 'illaryhs@gmail.com', '888888888');
-INSERT INTO public.organizations VALUES ('e839ee96-28de-4f67-bb79-870ca89743a0', 'Ostock', 'Illary Huaylupo', 'illaryhs@gmail.com', '888888888');
-INSERT INTO public.licenses VALUES ('f2a9c9d4-d2c0-44fa-97fe-724d77173c62', 'd898a142-de44-466c-8c88-9ceb2c2429d3', 'Software Product', 'Ostock', 'complete', 'I AM DEV');
-INSERT INTO public.licenses VALUES ('279709ff-e6d5-4a54-8b55-a5c37542025b', 'e839ee96-28de-4f67-bb79-870ca89743a0', 'Software Product', 'Ostock', 'complete', 'I AM DEV');
+INSERT INTO public.organizations
+VALUES ('e6a625cc-718b-48c2-ac76-1dfdff9a531e', 'Ostock', 'Illary Huaylupo', 'illaryhs@gmail.com', '888888888');
+INSERT INTO public.organizations
+VALUES ('d898a142-de44-466c-8c88-9ceb2c2429d3', 'OptimaGrowth', 'Admin', 'illaryhs@gmail.com', '888888888');
+INSERT INTO public.organizations
+VALUES ('e839ee96-28de-4f67-bb79-870ca89743a0', 'Ostock', 'Illary Huaylupo', 'illaryhs@gmail.com', '888888888');
+INSERT INTO public.licenses
+VALUES ('f2a9c9d4-d2c0-44fa-97fe-724d77173c62', 'd898a142-de44-466c-8c88-9ceb2c2429d3', 'Software Product', 'Ostock',
+        'complete', 'I AM DEV', TIMESTAMP '2021-12-12 00:00:00', TIMESTAMP '2021-12-12 00:00:00', 1);
+INSERT INTO public.licenses
+VALUES ('279709ff-e6d5-4a54-8b55-a5c37542025b', 'e839ee96-28de-4f67-bb79-870ca89743a0', 'Software Product', 'Ostock',
+        'complete', 'I AM DEV', TIMESTAMP '2021-12-12 00:00:00', TIMESTAMP '2021-12-12 00:00:00', 1);

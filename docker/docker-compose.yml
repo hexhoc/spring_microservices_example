@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "ostock_dev"
+      POSTGRES_DB: "ostock_prod"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - pgconf:/etc/postgresql
@@ -29,6 +29,8 @@ services:
     image: ostock/configserver:0.0.1-SNAPSHOT
     ports:
       - "8071:8071"
+    environment:
+      SPRING_PROFILES_ACTIVE: "prod"
     networks:
       backend:
         aliases:
@@ -39,6 +41,8 @@ services:
     image: ostock/eurekaserver:0.0.1-SNAPSHOT
     ports:
       - "8070:8070"
+    environment:
+      SPRING_PROFILES_ACTIVE: "prod"
     depends_on:
       - database
       - configserver
@@ -58,7 +62,7 @@ services:
     environment:
       #      - Passes along environment variables to the starting Docker image. In this case, sets the
       #        SPRING_PROFILES_ACTIVE environment variable on the starting Docker image.
-      PROFILE: "dev"
+      SPRING_PROFILES_ACTIVE: "prod"
     depends_on:
       - database
       - configserver
@@ -72,7 +76,7 @@ services:
     container_name: organizationservice
     image: ostock/organization-service:0.0.1-SNAPSHOT
     environment:
-      PROFILE: "dev"
+      SPRING_PROFILES_ACTIVE: "prod"
     depends_on:
       - database
       - configserver
