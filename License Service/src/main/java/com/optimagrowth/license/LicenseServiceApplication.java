@@ -54,6 +54,9 @@ public class LicenseServiceApplication {
         return messageSource;
     }
 
+    // To use a Load Balancer–aware RestTemplate class, we need to
+    // define a RestTemplate bean with a Spring Cloud @LoadBalanced annotation
+    // This is one of the more common mechanisms for interacting with the Load Balancer via Spring
     @LoadBalanced
     @Bean
     public RestTemplate getRestTemplate(){

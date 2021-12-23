@@ -128,7 +128,8 @@ O-stock can be a “make or break” moment for the company.
    - spring-cloud-starter-netflix-eureka-server
    - spring-cloud-starter-bootstrap
 2. Add @EnableEurekaServer annotation in EurekaServerApplication class
-   
+3. Check http://localhost:8070/eureka/apps/organization-service
+4. 
 
 ## Installation
 

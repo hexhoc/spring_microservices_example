@@ -49,14 +49,18 @@ public class LicenseServiceImpl implements LicenseService {
 
         switch (clientType) {
             case "feign":
+                // Feign—Uses Netflix’s Feign client library to invoke a service via the Load Balancer
                 System.out.println("I am using the feign client");
                 organization = organizationFeignClient.getOrganization(organizationId);
                 break;
             case "rest":
+                // Rest—Uses an enhanced Spring RestTemplate to invoke the Load Balancer service
                 System.out.println("I am using the rest client");
                 organization = organizationRestClient.getOrganization(organizationId);
                 break;
             case "discovery":
+                // Discovery—Uses the Discovery Client and a standard Spring RestTemplate class
+                // to invoke the organization service
                 System.out.println("I am using the discovery client");
                 organization = organizationDiscoveryClient.getOrganization(organizationId);
                 break;
