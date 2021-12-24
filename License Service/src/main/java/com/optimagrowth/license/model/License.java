@@ -36,11 +36,11 @@ public class License extends RepresentationModel<License> {
     private String comment;
     @Column(name = "created_at")
     @CreationTimestamp
-    @JsonFormat(pattern = "yyyy-mm-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     @UpdateTimestamp
-    @JsonFormat(pattern = "yyyy-mm-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
     @Version
     private long version;
