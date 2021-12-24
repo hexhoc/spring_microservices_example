@@ -3,12 +3,16 @@ package com.optimagrowth.license.controller;
 import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.service.LicenseService;
 import com.optimagrowth.license.service.impl.LicenseServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Locale;
-
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -23,11 +27,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(value = "v1/organization/{organizationId}/license")
 public class LicenseController {
 
+    private static final Logger logger = LoggerFactory.getLogger(LicenseController.class);
     private final LicenseService licenseService;
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     @Autowired
-    public LicenseController(LicenseServiceImpl licenseService) {
+    public LicenseController(LicenseServiceImpl licenseService, CircuitBreakerFactory circuitBreakerFactory) {
         this.licenseService = licenseService;
+        this.circuitBreakerFactory = circuitBreakerFactory;
     }
 
     //Get method to retrieve the license data
@@ -36,7 +43,7 @@ public class LicenseController {
     public ResponseEntity<License> getLicense(
             @PathVariable("organizationId") String organizationId,
             @PathVariable("licenseId") String licenseId,
-            @PathVariable("clientType") String clientType,
+            @PathVariable(value = "clientType", required = false) String clientType,
             @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
         License license = licenseService.getLicense(licenseId, organizationId, clientType, locale);
@@ -47,6 +54,8 @@ public class LicenseController {
                 linkTo(methodOn(LicenseController.class).createLicense(license)).withRel("createLicense"),
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
                 linkTo(methodOn(LicenseController.class).deleteLicense(license.getLicenseId(), locale)).withRel("deleteLicense"));
+
+        logger.info("Method get license by organization id {} and license id {} and client type {}",organizationId, licenseId, clientType);
 
 //        The ResponseEntity represents the entire HTTP response, including the status code, the headers, and the
 //        body. In the previous listing, it allows us to return the License object as the body and
@@ -59,12 +68,16 @@ public class LicenseController {
             //Maps the HTTP request body to a License object
             @RequestBody License license) {
 
+        logger.info("Method update license");
+
         return ResponseEntity.ok(licenseService.updateLicense(license));
     }
 
     @PostMapping
     public ResponseEntity<License> createLicense(
             @RequestBody License license) {
+
+        logger.info("Method create license");
 
         return ResponseEntity.ok(licenseService.createLicense(license));
     }
@@ -74,7 +87,20 @@ public class LicenseController {
             @PathVariable("licenseId") String licenseId,
             @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 
+        logger.info("Method delete license by license id {}", licenseId);
+
         return ResponseEntity.ok(licenseService.deleteLicense(licenseId, locale));
     }
+
+    @RequestMapping(value="/",method = RequestMethod.GET)
+    public List<License> getLicenses(@PathVariable("organizationId") String organizationId) {
+        logger.info("Method get licenses by organization id: {}", organizationId);
+        //try to get licenses through circuit breaker
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("myCircuitBreaker");
+        return circuitBreaker.run(
+                () -> licenseService.getLicensesByOrganization(organizationId),
+                throwable -> licenseService.buildFallbackLicenseList(organizationId, throwable));
+    }
+
 
 }

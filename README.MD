@@ -15,18 +15,24 @@ smaller microservice design, whose pieces can be deployed independently to the c
 O-stock can be a “make or break” moment for the company.
 
 ## development step by step
+
 ### license service
+
 1. Create new module "license server" with dependencies:
-    - Actuator
-    - Web
-    - lombok
-    - HATEOAS (this service return link how we can work with resource (GET, CREATE, UPDATE, DELETE))
-    - spring-cloud-starter-config (client for work with cloud config server)
+   - Actuator
+   - Web
+   - lombok
+   - HATEOAS (this service return link how we can work with resource (GET, CREATE, UPDATE, DELETE))
+   - spring-cloud-starter-config (client for work with cloud config server)
    - spring-boot-starter-data-jpa
    - postgresql
    - spring-cloud-starter-bootstrap (for use bootstrap.properties)
    - flyway. Flyway migration. Not need additional configuration, only enable it in spring properties file. Spring
      automatically found migration file and execute it. You do not need flyway plugin!
+   - spring-cloud-starter-circuitbreaker-resilience4j. We can test it if try to
+     connect http://localhost:8080/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/ a few times
+
+
 2. Create class com/optimagrowth/license/controller/LicenseController.java with @RestController and @RequestMapping(
    value = "v1/organization/{organizationId}/license")
 
@@ -129,7 +135,6 @@ O-stock can be a “make or break” moment for the company.
    - spring-cloud-starter-bootstrap
 2. Add @EnableEurekaServer annotation in EurekaServerApplication class
 3. Check http://localhost:8070/eureka/apps/organization-service
-4. 
 
 ## Installation
 

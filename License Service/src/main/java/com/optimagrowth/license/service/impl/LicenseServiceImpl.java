@@ -1,15 +1,15 @@
 package com.optimagrowth.license.service.impl;
 
 
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 import com.optimagrowth.license.model.Organization;
 import com.optimagrowth.license.service.LicenseService;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -72,10 +72,13 @@ public class LicenseServiceImpl implements LicenseService {
         return organization;
     }
 
+    // it dynamically generates a proxy that wraps the method and manages all calls to that method through a thread pool
+    // specifically set aside to handle remote calls.
+    @CircuitBreaker(name = "licenseService")
     public List<License> getLicensesByOrganization(String organizationId) {
+        randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
     }
-
 
     public License getLicense(String licenseId, String organizationId, String clientType, Locale locale){
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -114,5 +117,34 @@ public class LicenseServiceImpl implements LicenseService {
         responseMessage = String.format(messages.getMessage("license.delete.message", null, locale),licenseId);
         return responseMessage;
 
+    }
+
+    // Methods to simulate long execute for circuit breaker
+    private void randomlyRunLong(){
+        Random rand = new Random();
+        int randomNum = rand.nextInt((3 - 1) + 1) + 1;
+        if (randomNum==3) {
+            uncheckedSleep();
+        }
+    }
+    private void uncheckedSleep(){
+        try {
+            Thread.sleep(2500);
+        } catch (InterruptedException e) {
+            e.getMessage();
+        }
+    }
+
+    // Defines a single function that’s called if the calling service fails Returns a hardcoded value
+    // in the fallback method
+    private List<License> buildFallbackLicenseList(String organizationId, Throwable t){
+        List<License> fallbackList = new ArrayList<>();
+        License license = new License();
+        license.setLicenseId("0000000-00-00000");
+        license.setOrganizationId(organizationId);
+        license.setProductName(
+                "Sorry no licensing information currently available");
+        fallbackList.add(license);
+        return fallbackList;
     }
 }
