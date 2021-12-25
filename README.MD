@@ -29,9 +29,9 @@ O-stock can be a “make or break” moment for the company.
    - spring-cloud-starter-bootstrap (for use bootstrap.properties)
    - flyway. Flyway migration. Not need additional configuration, only enable it in spring properties file. Spring
      automatically found migration file and execute it. You do not need flyway plugin!
-   - spring-cloud-starter-circuitbreaker-resilience4j. We can test it if try to
+   - resilience4j-spring-boot2. We can test it if try to
      connect http://localhost:8080/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/ a few times
-
+   - spring-boot-starter-aop. It is needed for resilience4j
 
 2. Create class com/optimagrowth/license/controller/LicenseController.java with @RestController and @RequestMapping(
    value = "v1/organization/{organizationId}/license")

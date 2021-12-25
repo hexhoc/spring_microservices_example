@@ -17,5 +17,4 @@ public interface LicenseService {
 
     List<License> getLicensesByOrganization(String organizationId);
 
-    List<License> buildFallbackLicenseList(String organizationId, Throwable t);
 }

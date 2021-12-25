@@ -10,6 +10,7 @@ import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.optimagrowth.license.config.ServiceConfig;
 import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.repository.LicenseRepository;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 public class LicenseServiceImpl implements LicenseService {
@@ -44,6 +46,7 @@ public class LicenseServiceImpl implements LicenseService {
         this.organizationDiscoveryClient = organizationDiscoveryClient;
     }
 
+    @CircuitBreaker(name = "organizationService")
     private Organization retrieveOrganizationInfo(String organizationId, String clientType) {
         Organization organization = null;
 
@@ -74,7 +77,10 @@ public class LicenseServiceImpl implements LicenseService {
 
     // it dynamically generates a proxy that wraps the method and manages all calls to that method through a thread pool
     // specifically set aside to handle remote calls.
-    @CircuitBreaker(name = "licenseService")
+    @CircuitBreaker(
+            name = "licenseService",
+            // if fallback is set up, then circuit breaker ring will not close
+            fallbackMethod = "buildFallbackLicenseList")
     public List<License> getLicensesByOrganization(String organizationId) {
         randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
@@ -127,9 +133,13 @@ public class LicenseServiceImpl implements LicenseService {
             uncheckedSleep();
         }
     }
+
     private void uncheckedSleep(){
         try {
             Thread.sleep(2500);
+            //We throw exception and circuit breaker catch this exception, and mark it.
+            //We are say in bootstrap.properties, that we are record it of this exception is appeared
+            throw new ResourceAccessException("Operation is timeout");
         } catch (InterruptedException e) {
             e.getMessage();
         }

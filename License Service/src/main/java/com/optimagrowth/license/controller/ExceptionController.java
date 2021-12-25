@@ -16,6 +16,8 @@ import com.optimagrowth.license.model.utils.ErrorMessage;
 import com.optimagrowth.license.model.utils.ResponseWrapper;
 import com.optimagrowth.license.model.utils.RestErrorList;
 
+import java.util.Objects;
+
 /**
  *
  * @author Vladislav Zhuravskiy
@@ -54,10 +56,15 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResponseWrapper> handleIOException(HttpServletRequest request, RuntimeException e){
+        String detailedMessage = "";
+        if (Objects.nonNull(e.getCause())) {
+            detailedMessage = e.getCause().getMessage();
+        } else {
+            detailedMessage = e.getMessage();
+        }
 
-        RestErrorList errorList = new RestErrorList(HttpStatus.NOT_ACCEPTABLE, new ErrorMessage(e.getMessage(), e.getCause().getMessage()));
+        RestErrorList errorList = new RestErrorList(HttpStatus.NOT_ACCEPTABLE, new ErrorMessage(e.getMessage(), detailedMessage));
         ResponseWrapper responseWrapper = new ResponseWrapper(null, singletonMap("status", HttpStatus.NOT_ACCEPTABLE), errorList);
-
 
         return ResponseEntity.ok(responseWrapper);
     }

@@ -29,12 +29,10 @@ public class LicenseController {
 
     private static final Logger logger = LoggerFactory.getLogger(LicenseController.class);
     private final LicenseService licenseService;
-    private final CircuitBreakerFactory circuitBreakerFactory;
 
     @Autowired
-    public LicenseController(LicenseServiceImpl licenseService, CircuitBreakerFactory circuitBreakerFactory) {
+    public LicenseController(LicenseServiceImpl licenseService) {
         this.licenseService = licenseService;
-        this.circuitBreakerFactory = circuitBreakerFactory;
     }
 
     //Get method to retrieve the license data
@@ -95,11 +93,7 @@ public class LicenseController {
     @RequestMapping(value="/",method = RequestMethod.GET)
     public List<License> getLicenses(@PathVariable("organizationId") String organizationId) {
         logger.info("Method get licenses by organization id: {}", organizationId);
-        //try to get licenses through circuit breaker
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("myCircuitBreaker");
-        return circuitBreaker.run(
-                () -> licenseService.getLicensesByOrganization(organizationId),
-                throwable -> licenseService.buildFallbackLicenseList(organizationId, throwable));
+        return licenseService.getLicensesByOrganization(organizationId);
     }
 
 
