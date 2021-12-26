@@ -11,6 +11,7 @@ import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -82,9 +83,16 @@ public class LicenseServiceImpl implements LicenseService {
             name = "licenseService",
             // if fallback is set up, then circuit breaker ring will not close
             fallbackMethod = "buildFallbackLicenseList")
+    // retry pattern is responsible for retrying attempts to communicate with a service when that service initially fails
+    @Retry(
+            name = "retryLicenseService",
+            fallbackMethod = "buildFallbackLicenseList/"
+    )
     // Bulkhead wrap our request in thread pool (or use semaphore for current thread) check limit time for each request
     // If the time has expired, bulkhead use fallback method
-    @Bulkhead(name = "bulkheadLicenseService",
+    @Bulkhead(
+            name = "bulkheadLicenseService",
+            type = Bulkhead.Type.SEMAPHORE,
             fallbackMethod = "buildFallbackLicenseList")
     public List<License> getLicensesByOrganization(String organizationId) {
         randomlyRunLong();
