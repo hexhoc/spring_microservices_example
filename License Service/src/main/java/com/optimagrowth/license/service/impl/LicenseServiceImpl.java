@@ -100,6 +100,9 @@ public class LicenseServiceImpl implements LicenseService {
     @RateLimiter(
             name = "licenseService",
             fallbackMethod = "buildFallbackLicenseList")
+    // The bulkhead pattern segregates remote resource calls away from each other, isolating calls to a remote service
+    // into their own thread pool. If one set of service calls fails, its failure shouldn’t be allowed to “eat up”
+    // all the resources in the application container
     // Bulkhead wrap our request in thread pool (or use semaphore for current thread) check limit time for each request
     // If the time has expired, bulkhead use fallback method
     @Bulkhead(

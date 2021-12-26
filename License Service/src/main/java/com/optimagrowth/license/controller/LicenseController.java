@@ -3,6 +3,7 @@ package com.optimagrowth.license.controller;
 import com.optimagrowth.license.model.License;
 import com.optimagrowth.license.service.LicenseService;
 import com.optimagrowth.license.service.impl.LicenseServiceImpl;
+import com.optimagrowth.license.util.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,10 @@ public class LicenseController {
                 linkTo(methodOn(LicenseController.class).updateLicense(license)).withRel("updateLicense"),
                 linkTo(methodOn(LicenseController.class).deleteLicense(license.getLicenseId(), locale)).withRel("deleteLicense"));
 
-        logger.info("Method get license by organization id {} and license id {} and client type {}",organizationId, licenseId, clientType);
+        logger.debug("LicenseServiceController Correlation id: {}",
+                UserContextHolder.getContext().getCorrelationId());
+        logger.info("Method get license by organization id {} and license id {} and client type {}",
+                organizationId, licenseId, clientType);
 
 //        The ResponseEntity represents the entire HTTP response, including the status code, the headers, and the
 //        body. In the previous listing, it allows us to return the License object as the body and
