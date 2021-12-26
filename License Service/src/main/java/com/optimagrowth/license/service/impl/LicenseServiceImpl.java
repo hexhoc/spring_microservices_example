@@ -9,6 +9,7 @@ import com.optimagrowth.license.service.LicenseService;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,10 @@ public class LicenseServiceImpl implements LicenseService {
     @CircuitBreaker(
             name = "licenseService",
             // if fallback is set up, then circuit breaker ring will not close
+            fallbackMethod = "buildFallbackLicenseList")
+    // Bulkhead wrap our request in thread pool (or use semaphore for current thread) check limit time for each request
+    // If the time has expired, bulkhead use fallback method
+    @Bulkhead(name = "bulkheadLicenseService",
             fallbackMethod = "buildFallbackLicenseList")
     public List<License> getLicensesByOrganization(String organizationId) {
         randomlyRunLong();
