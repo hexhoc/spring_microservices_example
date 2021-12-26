@@ -11,6 +11,7 @@ import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,17 @@ public class LicenseServiceImpl implements LicenseService {
             name = "retryLicenseService",
             fallbackMethod = "buildFallbackLicenseList/"
     )
+    // The main difference between the bulkhead and the rate limiter pattern is that the
+    // bulkhead pattern is in charge of limiting the number of concurrent calls (for example, it only allows X concurrent
+    // calls at a time).
+    // With the rate limiter, we can limit the Defines the time a thread waits for permission Defines the number of
+    // permissions available during a limit refresh period Defines the period of a limit refresh Sets the instance name
+    // and fallback method for the rate limiter pattern
+
+    // for example, allow (limitForPeriod=5) number of calls every (timeoutDuration=1000ms) seconds.
+    @RateLimiter(
+            name = "licenseService",
+            fallbackMethod = "buildFallbackLicenseList")
     // Bulkhead wrap our request in thread pool (or use semaphore for current thread) check limit time for each request
     // If the time has expired, bulkhead use fallback method
     @Bulkhead(
