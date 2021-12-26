@@ -136,6 +136,17 @@ O-stock can be a “make or break” moment for the company.
 2. Add @EnableEurekaServer annotation in EurekaServerApplication class
 3. Check http://localhost:8070/eureka/apps/organization-service
 
+### API Gateway server
+1. Add dependencies:
+   - spring-cloud-starter-bootstrap
+   - spring-boot-starter-actuator
+   - spring-cloud-starter-config
+   - spring-cloud-starter-gateway
+   - spring-cloud-starter-netflix-eureka-client
+2. Change access to organization-service and licensing-service
+   - You can check new routes by address http://localhost:8072/actuator/gateway/routes
+
+
 ## Installation
 
 1. Use `gradlew buildDockerImage` for each project

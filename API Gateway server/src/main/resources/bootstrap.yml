@@ -1,0 +1,4 @@
+# by default
+spring:
+  profiles:
+    active: dev

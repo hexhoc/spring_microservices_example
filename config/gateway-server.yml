@@ -1,0 +1,43 @@
+server:
+  port: 8072
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eurekaserver:8070/eureka/
+
+
+spring:
+  profiles:
+    active: dev
+  # Enables the gateway to create routes based on services registered with service discovery
+  # (automatically create routes using service id from service discovery)
+  cloud:
+    gateway:
+      # Enable manual route for organization-service rename path to /orgservice
+      # Enable manual route for licensing-service rename path to /licservice
+      routes:
+        - id: organization-service
+          uri: lb://organization-service
+          predicates:
+            - Path=/orgservice/**
+          filters:
+            - RewritePath=/orgservice/(?<path>.*), /$\{path}
+        - id: licensing-service
+          uri: lb://licensing-service
+          predicates:
+            - Path=/licservice/**
+          filters:
+            - RewritePath=/licservice/(?<path>.*), /$\{path}
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
