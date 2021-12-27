@@ -1,13 +1,18 @@
 cd "./Configuration server"
 call gradlew.bat buildDockerImage
-cd ..
-cd "./Eureka Server"
+
+cd "../Eureka Server"
 call gradlew.bat buildDockerImage
-cd ..
-set root="./License Service"
-cd %root%
+
+cd "../License Service"
 call gradlew.bat buildDockerImage
-cd ..
-set root="./Organization Service"
-cd %root%
+
+cd "../Organization Service"
 call gradlew.bat buildDockerImage
+
+cd "../API Gateway server"
+call gradlew.bat buildDockerImage
+
+cd "../docker"
+call docker-compose rm -f
+call docker-compose up --build -d

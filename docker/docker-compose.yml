@@ -24,13 +24,30 @@ services:
       timeout: 5s
       retries: 5
 
+  keycloak:
+    container_name: keyclock
+    image: jboss/keycloak
+    restart: always
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    networks:
+      backend:
+        aliases:
+          - "keycloak"
+
   configserver:
     container_name: configserver
     image: ostock/configserver:0.0.1-SNAPSHOT
     ports:
       - "8071:8071"
+      - "9071:9071"
     environment:
-      SPRING_PROFILES_ACTIVE: "prod"
+      - SPRING_PROFILES_ACTIVE=prod
+      # add JAVA_TOOL_OPTIONS for remote debugging
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9071
     networks:
       backend:
         aliases:
@@ -41,8 +58,10 @@ services:
     image: ostock/eurekaserver:0.0.1-SNAPSHOT
     ports:
       - "8070:8070"
+      - "9070:9070"
     environment:
-      SPRING_PROFILES_ACTIVE: "prod"
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9070
     depends_on:
       - database
       - configserver
@@ -51,6 +70,20 @@ services:
         aliases:
           - "eurekaserver"
 
+  gatewayserver:
+    container_name: gatewayserver
+    image: ostock/gatewayserver:0.0.1-SNAPSHOT
+    ports:
+      - "8072:8072"
+      - "9072:9072"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9072
+    networks:
+      backend:
+        aliases:
+          - "gatewayserver"
+
   licensingservice:
     container_name: licensingservice
     #    Docker Compose first tries to find the target image to be started in the local Docker
@@ -58,11 +91,13 @@ services:
     image: ostock/licensing-service:0.0.1-SNAPSHOT
     #    Defines the port numbers on the started Docker container, which are exposed to the outside world
     ports:
-      - "8080:8080"
+      - "8180:8080"
+      - "9180:9180"
     environment:
       #      - Passes along environment variables to the starting Docker image. In this case, sets the
       #        SPRING_PROFILES_ACTIVE environment variable on the starting Docker image.
-      SPRING_PROFILES_ACTIVE: "prod"
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9180
     depends_on:
       - database
       - configserver
@@ -75,13 +110,15 @@ services:
   organizationservice:
     container_name: organizationservice
     image: ostock/organization-service:0.0.1-SNAPSHOT
+    ports:
+      - "8081:8081"
+      - "9081:9081"
     environment:
-      SPRING_PROFILES_ACTIVE: "prod"
+      - SPRING_PROFILES_ACTIVE=prod
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9081
     depends_on:
       - database
       - configserver
-    ports:
-      - "8081:8081"
     networks:
       - backend
 
