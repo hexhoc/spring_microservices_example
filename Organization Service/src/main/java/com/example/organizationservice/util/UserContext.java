@@ -1,4 +1,4 @@
-package com.optimagrowth.license.util;
+package com.example.organizationservice.util;
 
 import lombok.Getter;
 import lombok.Setter;
