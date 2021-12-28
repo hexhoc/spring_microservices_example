@@ -2,6 +2,7 @@ package com.optimagrowth.license.service.client;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class OrganizationRestTemplateClient {
     private RestTemplate restTemplate;
 
     @Autowired
-    public OrganizationRestTemplateClient(RestTemplate restTemplate) {
+    public OrganizationRestTemplateClient(@Qualifier("keycloakRestTemplate") RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
