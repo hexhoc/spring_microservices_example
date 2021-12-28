@@ -18,6 +18,9 @@ spring:
   # (automatically create routes using service id from service discovery)
   cloud:
     gateway:
+      discovery.locator:
+        enabled: true
+        lowerCaseServiceId: true
       # Enable manual route for organization-service rename path to /orgservice
       # Enable manual route for licensing-service rename path to /licservice
       routes:
