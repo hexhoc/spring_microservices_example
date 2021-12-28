@@ -22,6 +22,7 @@ repositories {
 
 ext {
     set('springCloudVersion', "2021.0.0")
+    set('keycloakVersion', '16.1.0')
 }
 
 dependencies {
@@ -36,12 +37,17 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
+    // https://mvnrepository.com/artifact/org.keycloak/keycloak-spring-boot-starter
+    implementation group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: '16.1.0'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.6.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}"
     }
 }
 

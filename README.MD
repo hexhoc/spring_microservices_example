@@ -30,7 +30,7 @@ O-stock can be a “make or break” moment for the company.
    - flyway. Flyway migration. Not need additional configuration, only enable it in spring properties file. Spring
      automatically found migration file and execute it. You do not need flyway plugin!
    - resilience4j-spring-boot2. We can test it if try to
-     connect http://localhost:8080/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/ a few times
+     connect http://localhost:8180/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/ a few times
    - spring-boot-starter-aop. It is needed for resilience4j
 
 2. Create class com/optimagrowth/license/controller/LicenseController.java with @RestController and @RequestMapping(
@@ -74,7 +74,7 @@ O-stock can be a “make or break” moment for the company.
    
       `docker build --build-arg JAR_FILE=build/libs/*.jar -t ostock/licensing-service:0.0.1-SNAPSHOT .`
       
-      `docker run --name licensing-service -p 8080:8080 ostock/licensing-service:0.0.1-SNAPSHOT`
+      `docker run --name licensing-service -p 8180:8180 ostock/licensing-service:0.0.1-SNAPSHOT`
    
    4. Create docker-compose.yml and try to start it `docker-compose up`
 10. Create default application.properties in which to specify connect to config server and active profile
@@ -82,7 +82,7 @@ O-stock can be a “make or break” moment for the company.
     `java -Dspring.cloud.config.uri=http://localhost:8071
     -Dspring.profiles.active=dev
     -jar target/licensing-service-0.0.1-SNAPSHOT.jar`
-12. You can check all environment variables through actuator `http://localhost:8080/actuator/env`.
+12. You can check all environment variables through actuator `http://localhost:8180/actuator/env`.
 13. Add db/migration in resource and enable spring.flyway in properties
 
 ### license service. Handle exception
@@ -146,6 +146,31 @@ O-stock can be a “make or break” moment for the company.
 2. Change access to organization-service and licensing-service
    - You can check new routes by address http://localhost:8072/actuator/gateway/routes
 
+### Security. KeyClock
+1. Create new docker container for keyclock image
+2. Open localhost:8080, login and password "admin" and config new realm "spmia-realm"
+3. Create new client "ostock". Access Type = confidential, Service Accounts Enabled = ON, Authorization Enabled = ON
+4. Create two client's roles - USER and ADMIN (not composite)
+5. Create two realm's roles - ostock-admin and ostock-user (composite) relative with client's roles
+6. Create new user, login = hexhoc, password = Vcsdfr13, role = ostock_admin
+7. Create POST query for get access token. Basic auth - username = ostock, password = QMCX3PjFa9nrVObDSi12ISH790vWRfO4 (
+   client's credentials) and body - grant_type = password, username = hexhoc, password = Vcsdfr13
+
+   `curl --location --request POST 'http://localhost:8080/auth/realms/spmia-realm/protocol/openid-connect/token' \
+   --header 'Authorization: Basic b3N0b2NrOlFNQ1gzUGpGYTluclZPYkRTaTEySVNINzkwdldSZk80' \
+   --header 'Content-Type: application/x-www-form-urlencoded' \
+   --data-urlencode 'grant_type=password' \
+   --data-urlencode 'username=hexhoc' \
+   --data-urlencode 'password=Vcsdfr13'`
+
+### Security. Organization-service
+1. Add a few dependencies:
+   - keycloak-spring-boot-starter
+   - spring-boot-starter-security
+2. Add configuration properties for KeyClock
+3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter
+4. 
+   
 
 ## Installation
 
