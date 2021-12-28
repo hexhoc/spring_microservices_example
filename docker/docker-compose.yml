@@ -91,7 +91,7 @@ services:
     image: ostock/licensing-service:0.0.1-SNAPSHOT
     #    Defines the port numbers on the started Docker container, which are exposed to the outside world
     ports:
-      - "8180:8080"
+      - "8180:8180"
       - "9180:9180"
     environment:
       #      - Passes along environment variables to the starting Docker image. In this case, sets the
