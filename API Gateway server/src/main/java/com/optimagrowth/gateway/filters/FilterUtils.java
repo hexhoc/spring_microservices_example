@@ -28,6 +28,16 @@ public class FilterUtils {
         }
     }
 
+    public String getAuthToken(HttpHeaders requestHeaders){
+        if (requestHeaders.get(AUTH_TOKEN) !=null) {
+            List<String> header = requestHeaders.get(AUTH_TOKEN);
+            return header.stream().findFirst().get();
+        }
+        else{
+            return null;
+        }
+    }
+
     public ServerWebExchange setRequestHeader(ServerWebExchange exchange, String name, String value) {
         return exchange.mutate().request(
                         exchange.getRequest().mutate()
