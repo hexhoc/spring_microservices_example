@@ -59,30 +59,45 @@ O-stock can be a “make or break” moment for the company.
 9. The DevOps story: Building for the rigors of runtime
    1. Service assembly: Packaging and deploying your microservices.
    
-      `./gradlew assemble && java -jar build/libs/licensing-service-0.0.1-SNAPSHOT.jar` 
-   2. Create dockerfile
-   
-      `FROM openjdk:17
-      ARG JAR_FILE=build/libs/*.jar
-      COPY ${JAR_FILE} app.jar
-      ENTRYPOINT ["java","-jar","/app.jar"]`
-      
+   ```
+   ./gradlew assemble && java -jar build/libs/licensing-service-0.0.1-SNAPSHOT.jar
+   ``` 
+   3. Create dockerfile
+
+   ```
+   FROM openjdk:17
+   ARG JAR_FILE=build/libs/*.jar
+   COPY ${JAR_FILE} app.jar
+   ENTRYPOINT ["java","-jar","/app.jar"]
+   ```
+
       or using gradle
 
-      `./gradlew bootBuildImage --imageName=ostock/licensing-service:0.0.1-SNAPSHOT`
-   3. Pack our project in docker image and try to start
-   
-      `docker build --build-arg JAR_FILE=build/libs/*.jar -t ostock/licensing-service:0.0.1-SNAPSHOT .`
+   ```
+   ./gradlew bootBuildImage --imageName=ostock/licensing-service:0.0.1-SNAPSHOT
+   ```
+   4. Pack our project in docker image and try to start
+
+   ```
+   docker build --build-arg JAR_FILE=build/libs/*.jar -t ostock/licensing-service:0.0.1-SNAPSHOT .
+   ```
       
-      `docker run --name licensing-service -p 8180:8180 ostock/licensing-service:0.0.1-SNAPSHOT`
+   ```
+   docker run --name licensing-service -p 8180:8180 ostock/licensing-service:0.0.1-SNAPSHOT
+   ```
    
-   4. Create docker-compose.yml and try to start it `docker-compose up`
+    5. Create docker-compose.yml and try to start it ```docker-compose up```
 10. Create default application.properties in which to specify connect to config server and active profile
 11. We can compile jar with override properties using next command:
-    `java -Dspring.cloud.config.uri=http://localhost:8071
+    ```
+    java -Dspring.cloud.config.uri=http://localhost:8071
     -Dspring.profiles.active=dev
-    -jar target/licensing-service-0.0.1-SNAPSHOT.jar`
-12. You can check all environment variables through actuator `http://localhost:8180/actuator/env`.
+    -jar target/licensing-service-0.0.1-SNAPSHOT.jar
+    ```
+12. You can check all environment variables through actuator
+   ```
+   http://localhost:8180/actuator/env
+   ```
 13. Add db/migration in resource and enable spring.flyway in properties
 
 ### license service. Handle exception
@@ -119,7 +134,10 @@ O-stock can be a “make or break” moment for the company.
    Spring framework implements a hierarchical mechanism for properties. First applied licensing-service.properties and
    after then licensing-service-dev.properties
 5. Create Dockerfile and edit docker-compose.yml for new image
-6. Check it service is work `http://localhost:8071/licensing-service/default`
+6. Check it service is work 
+   ```
+   http://localhost:8071/licensing-service/default
+   ```
 7. Add encrypt symmetric key in bootstrap.properties. The symmetric encryption key is nothing more than a shared secret
    that’s used by the encrypter to encrypt a value and by the decrypter to decrypt a value.
 
@@ -156,26 +174,48 @@ O-stock can be a “make or break” moment for the company.
 7. Create POST query for get access token. Basic auth - username = ostock, password = QMCX3PjFa9nrVObDSi12ISH790vWRfO4 (
    client's credentials) and body - grant_type = password, username = hexhoc, password = Vcsdfr13
 
-   `curl --location --request POST 'http://localhost:8080/auth/realms/spmia-realm/protocol/openid-connect/token' \
+   ```
+   curl --location --request POST 'http://localhost:8080/auth/realms/spmia-realm/protocol/openid-connect/token' \
    --header 'Authorization: Basic b3N0b2NrOlFNQ1gzUGpGYTluclZPYkRTaTEySVNINzkwdldSZk80' \
    --header 'Content-Type: application/x-www-form-urlencoded' \
    --data-urlencode 'grant_type=password' \
    --data-urlencode 'username=hexhoc' \
-   --data-urlencode 'password=Vcsdfr13'`
+   --data-urlencode 'password=Vcsdfr13'
+   ```
 
 ### Security. Organization-service
 1. Add a few dependencies:
    - keycloak-spring-boot-starter
    - spring-boot-starter-security
-2. Add configuration properties for KeyClock
-3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter
-4. 
-   
+2. Add configuration properties (connect, rules, etc) for KeyClock
+3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter. This class configure organizaton-service how it should secure resource
+4. Add @RolesAllowed annotation in OrganizationController class
+
+### Security. License-service
+1. Add a few dependencies:
+   - keycloak-spring-boot-starter
+   - spring-boot-starter-security
+2. Add configuration properties (connect, rules, etc) for KeyClock
+3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter. This class configure licensing-service how it should secure resource
+
+### Security. gatewayservice
+1. Add dependency - json
+2. Add in FilterUtils class method that extract and return Auth token from headers
+3. Add in TrackingFilter class method getUsername that decode auth token and get Username from it
+
+### Security. How it works
+
 
 ## Installation
 
-1. Use `gradlew buildDockerImage` for each project
-2. cd docker/ and execute `docker-compose up` 
+1. Use for each project
+   ```
+   gradlew buildDockerImage
+   ``` 
+2. cd docker/ and execute 
+   ```
+   docker-compose up
+   ``` 
 
 
 

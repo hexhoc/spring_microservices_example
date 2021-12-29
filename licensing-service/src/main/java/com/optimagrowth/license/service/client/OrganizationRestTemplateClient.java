@@ -1,5 +1,6 @@
 package com.optimagrowth.license.service.client;
 
+import com.optimagrowth.license.config.ServiceConfig;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,10 +18,13 @@ public class OrganizationRestTemplateClient {
     // uses whatever is passed in as the server name as the key to query the Load Balancer for
     // an instance of a service
     private RestTemplate restTemplate;
+    private ServiceConfig serviceConfig;
 
     @Autowired
-    public OrganizationRestTemplateClient(@Qualifier("keycloakRestTemplate") RestTemplate restTemplate) {
+    public OrganizationRestTemplateClient(@Qualifier("keycloakRestTemplate") RestTemplate restTemplate,
+                                          ServiceConfig serviceConfig) {
         this.restTemplate = restTemplate;
+        this.serviceConfig = serviceConfig;
     }
 
     public Organization getOrganization(String organizationId){
@@ -31,7 +35,7 @@ public class OrganizationRestTemplateClient {
                 // key that you used to register the organization service with Eureka:
                 // http://{applicationid}/v1/organization/{organizationId}
                 restTemplate.exchange(
-                        "http://organization-service/v1/organization/{organizationId}",
+                        serviceConfig.getGateway()+"/organization-service/v1/organization/{organizationId}",
                         HttpMethod.GET,
                         null, Organization.class, organizationId);
 

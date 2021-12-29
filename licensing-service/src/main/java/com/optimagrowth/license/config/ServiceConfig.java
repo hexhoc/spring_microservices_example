@@ -13,5 +13,6 @@ import lombok.Setter;
 public class ServiceConfig{
 
     private String property;
+    private String gateway;
 
 }

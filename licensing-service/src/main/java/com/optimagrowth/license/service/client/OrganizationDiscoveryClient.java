@@ -36,7 +36,6 @@ public class OrganizationDiscoveryClient {
 
         //Demonstrate how to create restTemplate without autowired
         RestTemplate restTemplate = new RestTemplate();
-
         // Gets a list of all the instances of the organization services
         List<ServiceInstance> instances = discoveryClient.getInstances("organization-service");
 
