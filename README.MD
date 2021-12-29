@@ -188,23 +188,56 @@ O-stock can be a “make or break” moment for the company.
    - keycloak-spring-boot-starter
    - spring-boot-starter-security
 2. Add configuration properties (connect, rules, etc) for KeyClock
-3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter. This class configure organizaton-service how it should secure resource
+3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter. This class configure organizaton-service
+   how it should secure resource
 4. Add @RolesAllowed annotation in OrganizationController class
 
 ### Security. License-service
+
 1. Add a few dependencies:
    - keycloak-spring-boot-starter
    - spring-boot-starter-security
 2. Add configuration properties (connect, rules, etc) for KeyClock
-3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter. This class configure licensing-service how it should secure resource
+3. Create SpringConfig class that extend KeycloakWebSecurityConfigurerAdapter. This class configure licensing-service
+   how it should secure resource
+4. Create @Bean KeycloakRestTemplate. Keycloak provides a new REST template class that support - 
+   - Grab the HTTP header of the incoming licensing service call
+   - Add it to every outbound service call in the licensing service
+5. When we use RestTemplate to get data from another service, we should do it through gateway - http://gateway-server:8072
+   or http://localhost:8072 (to dev profile).
 
 ### Security. gatewayservice
+
 1. Add dependency - json
 2. Add in FilterUtils class method that extract and return Auth token from headers
 3. Add in TrackingFilter class method getUsername that decode auth token and get Username from it
+4. Change routes in configuration properties. By default, the gateway doesn’t forward sensitive HTTP headers like cookie,
+   set-cookie, and authorization to downstream services
 
 ### Security. How it works
+Pay attention! we should not use any interceptors to intercept and distribute the user token. This whole key-cloak makes itself.
+When some service get token, it itself going to the KeyCloak service and validate it.
 
+1. User somehow get token from KeyClock! TODO
+2. Call licensing service with token through gateway
+3. The gateway looks up the licensing service endpoint and then forwards the call
+   to one of the licensing service’s servers. The services gateway copies the
+   authorization HTTP header from the incoming call and ensures that the HTTP
+   header is forwarded on to the new endpoint.
+
+   **This is work automatically. We do not need to do something for that.**
+4. The licensing service receives the incoming call. Because the licensing service is
+   a protected resource, the licensing service will validate the token with the Keycloak server and then check the 
+   user’s roles for the appropriate permissions. As part of its work, the licensing service invokes the organization service.
+   When doing this, the licensing service needs to propagate the user’s access
+   token to the organization service.
+
+### Security. Recommendations
+For production use, you should also build your microservice security around the following practices:
+   - Use HTTPS/Secure Sockets Layer (SSL) for all service communications.
+   - Use an API gateway for all service calls.
+   - Provide zones for your services (for example, a public API and private API).
+   - Limit the attack surface of your microservices by locking down unneeded network ports
 
 ## Installation
 

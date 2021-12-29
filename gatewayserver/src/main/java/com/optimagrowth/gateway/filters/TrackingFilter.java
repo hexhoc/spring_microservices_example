@@ -69,6 +69,7 @@ public class TrackingFilter implements GlobalFilter {
         return java.util.UUID.randomUUID().toString();
     }
 
+    // Example of how to parse a custom field in a JWT
     private String getUsername(HttpHeaders requestHeaders){
         String username = "";
         if (filterUtils.getAuthToken(requestHeaders)!=null){
@@ -84,9 +85,11 @@ public class TrackingFilter implements GlobalFilter {
 
     private JSONObject decodeJWT(String JWTToken) {
         String[] split_string = JWTToken.split("\\.");
+        // Uses Base64 encoding to parse the token, passing in the key that signs the token
         String base64EncodedBody = split_string[1];
         Base64 base64Url = new Base64(true);
         String body = new String(base64Url.decode(base64EncodedBody));
+        // Parses the JWT body into a JSON object to retrieve the preferred_username
         JSONObject jsonObj = new JSONObject(body);
         return jsonObj;
     }

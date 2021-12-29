@@ -57,6 +57,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public KeycloakRestTemplate keycloakRestTemplate() {
+		// Keycloak provides a new REST template class that support
+		// 1. Grab the HTTP header of the incoming licensing service call
+		// 2. Add it to every outbound service call in the licensing service
 		return new KeycloakRestTemplate(keycloakClientRequestFactory);
 	}
 }

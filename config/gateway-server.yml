@@ -30,12 +30,16 @@ spring:
             - Path=/orgservice/**
           filters:
             - RewritePath=/orgservice/(?<path>.*), /$\{path}
+            # gateway doesn’t forward sensitive HTTP headers like cookie,set-cookie, and authorization to downstream services
+            - RemoveRequestHeader= Cookie,Set-Cookie
         - id: licensing-service
           uri: lb://licensing-service
           predicates:
             - Path=/licservice/**
           filters:
             - RewritePath=/licservice/(?<path>.*), /$\{path}
+            # gateway doesn’t forward sensitive HTTP headers like cookie,set-cookie, and authorization to downstream services
+            - RemoveRequestHeader= Cookie,Set-Cookie
 
 
 
