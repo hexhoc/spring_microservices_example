@@ -3,7 +3,7 @@ FROM openjdk:17
 # Add Maintainer Info
 LABEL maintainer="Vladislav Zhuravsky <hexhoc@gmail.com>"
 # The application's jar file
-ARG JAR_FILE=build/libs/*.jar
+ARG JAR_FILE=build/libs/configserver-0.0.1-SNAPSHOT.jar
 # Add the application's jar to the container
 COPY ${JAR_FILE} app.jar
 #execute the application after container is run

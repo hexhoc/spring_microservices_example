@@ -1,18 +1,20 @@
-cd "./Configuration server"
+cd "./configserver"
 call gradlew.bat buildDockerImage
 
-cd "../Eureka Server"
+cd "../eurekaserver"
 call gradlew.bat buildDockerImage
 
-cd "../License Service"
+cd "../licensing-service"
 call gradlew.bat buildDockerImage
 
-cd "../Organization Service"
+cd "../organization-service"
 call gradlew.bat buildDockerImage
 
-cd "../API Gateway server"
+cd "../gatewayserver"
 call gradlew.bat buildDockerImage
 
 cd "../docker"
+
+call docker-compose stop
 call docker-compose rm -f
-call docker-compose up --build -d
+call docker-compose up --build --no-start
