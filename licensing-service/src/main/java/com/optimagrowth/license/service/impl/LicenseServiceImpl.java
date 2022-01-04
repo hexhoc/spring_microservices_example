@@ -2,7 +2,6 @@ package com.optimagrowth.license.service.impl;
 
 
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 
 import com.optimagrowth.license.model.Organization;
 import com.optimagrowth.license.service.LicenseService;
@@ -13,7 +12,6 @@ import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -26,12 +24,12 @@ import org.springframework.web.client.ResourceAccessException;
 @Service
 public class LicenseServiceImpl implements LicenseService {
 
-    private MessageSource messages;
-    private LicenseRepository licenseRepository;
-    private ServiceConfig config;
-    private OrganizationFeignClient organizationFeignClient;
-    private OrganizationRestTemplateClient organizationRestClient;
-    private OrganizationDiscoveryClient organizationDiscoveryClient;
+    private final MessageSource messages;
+    private final LicenseRepository licenseRepository;
+    private final ServiceConfig serviceConfig;
+    private final OrganizationFeignClient organizationFeignClient;
+    private final OrganizationRestTemplateClient organizationRestClient;
+    private final OrganizationDiscoveryClient organizationDiscoveryClient;
 
 
     @Autowired
@@ -43,7 +41,7 @@ public class LicenseServiceImpl implements LicenseService {
                               OrganizationDiscoveryClient organizationDiscoveryClient) {
         this.messages = messages;
         this.licenseRepository = licenseRepository;
-        this.config = config;
+        this.serviceConfig = config;
         this.organizationFeignClient = organizationFeignClient;
         this.organizationRestClient = organizationRestClient;
         this.organizationDiscoveryClient = organizationDiscoveryClient;
@@ -128,19 +126,19 @@ public class LicenseServiceImpl implements LicenseService {
             license.setContactPhone(organization.getContactPhone());
         }
 
-        return license.withComment(config.getProperty());
+        return license.withComment(serviceConfig.getProperty());
     }
 
     public License createLicense(License license){
         license.setLicenseId(UUID.randomUUID().toString());
         licenseRepository.save(license);
 
-        return license.withComment(config.getProperty());
+        return license.withComment(serviceConfig.getProperty());
     }
 
     public License updateLicense(License license){
         licenseRepository.save(license);
-        return license.withComment(config.getProperty());
+        return license.withComment(serviceConfig.getProperty());
     }
 
     public String deleteLicense(String licenseId, Locale locale){

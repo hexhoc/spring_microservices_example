@@ -13,7 +13,7 @@ import javax.annotation.security.RolesAllowed;
 @RequestMapping(value="v1/organization")
 public class OrganizationController {
 
-    private OrganizationService service;
+    private final OrganizationService service;
 
     @Autowired
     public OrganizationController(OrganizationService service) {

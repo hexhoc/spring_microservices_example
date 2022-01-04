@@ -1,7 +1,11 @@
 package com.optimagrowth.license.service.client;
 
 import com.optimagrowth.license.config.ServiceConfig;
+import com.optimagrowth.license.repository.OrganizationRedisRepository;
+import com.optimagrowth.license.util.UserContext;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
@@ -17,17 +21,33 @@ public class OrganizationRestTemplateClient {
     // The Load Balancer–enabled RestTemplate class parses the URL passed into it and
     // uses whatever is passed in as the server name as the key to query the Load Balancer for
     // an instance of a service
-    private RestTemplate restTemplate;
-    private ServiceConfig serviceConfig;
+    private final RestTemplate restTemplate;
+    private final ServiceConfig serviceConfig;
+    private final OrganizationRedisRepository redisRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(OrganizationRestTemplateClient.class);
 
     @Autowired
     public OrganizationRestTemplateClient(@Qualifier("keycloakRestTemplate") RestTemplate restTemplate,
-                                          ServiceConfig serviceConfig) {
+                                          ServiceConfig serviceConfig,
+                                          OrganizationRedisRepository redisRepository) {
         this.restTemplate = restTemplate;
         this.serviceConfig = serviceConfig;
+        this.redisRepository = redisRepository;
     }
 
     public Organization getOrganization(String organizationId){
+        logger.debug("In Licensing Service.getOrganization: {}", UserContext.getCorrelationId());
+
+        Organization organization = checkRedisCache(organizationId);
+
+        if (organization != null){
+            logger.debug("I have successfully retrieved an organization {} from the redis cache: {}", organizationId, organization);
+            return organization;
+        }
+
+        logger.debug("Unable to locate organization from the redis cache: {}.", organizationId);
+
         // When using a Load Balancer backed RestTemplate, builds the target URL
         // with the Eureka service ID
         ResponseEntity<Organization> restExchange =
@@ -39,6 +59,30 @@ public class OrganizationRestTemplateClient {
                         HttpMethod.GET,
                         null, Organization.class, organizationId);
 
+        /*Save the record from cache*/
+        organization = restExchange.getBody();
+        if (organization != null) {
+            cacheOrganizationObject(organization);
+        }
+
         return restExchange.getBody();
+    }
+
+
+    private Organization checkRedisCache(String organizationId) {
+        try {
+            return redisRepository.findById(organizationId).orElse(null);
+        }catch (Exception ex){
+            logger.error("Error encountered while trying to retrieve organization {} check Redis Cache.  Exception {}", organizationId, ex);
+            return null;
+        }
+    }
+
+    private void cacheOrganizationObject(Organization organization) {
+        try {
+            redisRepository.save(organization);
+        }catch (Exception ex){
+            logger.error("Unable to cache organization {} in Redis. Exception {}", organization.getId(), ex);
+        }
     }
 }

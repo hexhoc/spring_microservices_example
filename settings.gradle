@@ -1,0 +1,6 @@
+rootProject.name = 'spring_microservices_example'
+include 'configserver'
+include 'eurekaserver'
+include 'gatewayserver'
+include 'licensing-service'
+include 'organization-service'

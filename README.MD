@@ -242,28 +242,64 @@ For production use, you should also build your microservice security around the 
    - Limit the attack surface of your microservices by locking down unneeded network ports
 
 ## Message broker
-### Config organization service
-**Modify the organization service to publish a message to Kafka every time the organization service changes data**
+### Config kafka in organization service
+Add docker images:
+   - kafka
+   - zookeeper
+   - redis
+
+**Modify the organization service to _publish_ a message to Kafka every time the organization service changes data**
 1. Add dependencies:
    - spring-cloud-stream
    - spring-cloud-starter-stream-kafka
 2. @EnableBinding(Source.class) in OrganizationServiceApplication class
-3. Add docker images:
-   - kafka
-   - zookeeper
-   - redis
-4. Add configuration properties
+3. Add configuration properties
    - Channel for communication
    - Content-type
    - Bind with kafka
-5. Create OrganizationChangeModel class. This class is DTO for kafka with following fields:
+4. Create OrganizationChangeModel class. This class is DTO for kafka with following fields:
    - type
    - action
    - organizationId
    - correlationId
-6. Create SimpleSourceBean class. This class will implement **publishOrganizationChange** method this method get data
+5. Create SimpleSourceBean class. This class will implement **publishOrganizationChange** method this method get data
    about changes create **OrganizationChangeModel** instance and send it to message broker (kafka)
-7. Add ThreadLocal static variables to UserContext class, to store data individually for the current thread.
+6. Add ThreadLocal static variables to UserContext class, to store data individually for the current thread.
+
+### Config kafka in licensing service
+1. Add dependencies:
+   - spring-cloud-stream
+   - spring-cloud-starter-stream-kafka
+   - jedis. Spring uses the Jedis open source project to communicate with a Redis server
+   - spring-data-redis
+2. Add configuration properties
+   - Channel for communication
+   - Content-type
+   - Bind with kafka
+3. Create OrganizationChangeModel class. This class is DTO for kafka with following fields:
+   - type
+   - action
+   - organizationId
+   - correlationId
+4. Create OrganizationChangeHandler class to logging communication with kafka
+5. Create CustomChannels class to custom channel for kafka
+6. Add ThreadLocal static variables to UserContext class, to store data individually for the current thread.
+
+### Config Redis in licensing service
+We are work with redis like database, using entity and repository for implement CRUD model. 
+
+1. Add dependencies:
+   - jedis. Spring uses the Jedis open source project to communicate with a Redis server
+   - spring-data-redis
+2. Add configuration properties
+   - Redis host and port
+3. Create @Bean JedisConnectionFactory to connect to redis server and @Bean @RedisTemplate to using that connect to work with redis
+4. Create interface repository OrganizationRedisRepository. This will be crud model for redis
+5. Add @RedisHash("organization") to Organization class. Organization is entity that contains in redis hash
+6. Edit OrganizationRestTemplateClient class to check redis cache before retrieve organization from organization-service
+
+
+
 
 ## Installation
 

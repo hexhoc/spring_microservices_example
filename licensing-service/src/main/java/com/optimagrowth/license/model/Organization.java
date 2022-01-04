@@ -3,17 +3,21 @@ package com.optimagrowth.license.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.hateoas.RepresentationModel;
 
-@Getter
-@Setter
-@ToString
-// HATEOAS. Extends from the RepresentationModel class to inherit the add() method. So once we create a link, we can easily set
-// that value to the resource representation without adding any new fields to it.
+import javax.persistence.Id;
+
+
+@Getter @Setter @ToString
+@RedisHash("organization")
 public class Organization extends RepresentationModel<Organization> {
+
+    @Id
     String id;
     String name;
     String contactName;
     String contactEmail;
     String contactPhone;
+
 }
