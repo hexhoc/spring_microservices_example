@@ -164,6 +164,8 @@ O-stock can be a “make or break” moment for the company.
 2. Change access to organization-service and licensing-service
    - You can check new routes by address http://localhost:8072/actuator/gateway/routes
 
+## Security
+
 ### Security. KeyClock
 1. Create new docker container for keyclock image
 2. Open localhost:8080, login and password "admin" and config new realm "spmia-realm"
@@ -238,6 +240,30 @@ For production use, you should also build your microservice security around the 
    - Use an API gateway for all service calls.
    - Provide zones for your services (for example, a public API and private API).
    - Limit the attack surface of your microservices by locking down unneeded network ports
+
+## Message broker
+### Config organization service
+**Modify the organization service to publish a message to Kafka every time the organization service changes data**
+1. Add dependencies:
+   - spring-cloud-stream
+   - spring-cloud-starter-stream-kafka
+2. @EnableBinding(Source.class) in OrganizationServiceApplication class
+3. Add docker images:
+   - kafka
+   - zookeeper
+   - redis
+4. Add configuration properties
+   - Channel for communication
+   - Content-type
+   - Bind with kafka
+5. Create OrganizationChangeModel class. This class is DTO for kafka with following fields:
+   - type
+   - action
+   - organizationId
+   - correlationId
+6. Create SimpleSourceBean class. This class will implement **publishOrganizationChange** method this method get data
+   about changes create **OrganizationChangeModel** instance and send it to message broker (kafka)
+7. Add ThreadLocal static variables to UserContext class, to store data individually for the current thread.
 
 ## Installation
 
