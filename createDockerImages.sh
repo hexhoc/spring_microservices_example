@@ -17,4 +17,4 @@ cd "../docker" || exit
 
 docker-compose stop
 docker-compose rm -f
-docker-compose up --build --no-start
+docker-compose up --build -d

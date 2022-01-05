@@ -92,6 +92,10 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       # add JAVA_TOOL_OPTIONS for remote debugging
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9071
+    depends_on:
+      - database
+      - redisserver
+      - kafkaserver
     networks:
       backend:
         aliases:

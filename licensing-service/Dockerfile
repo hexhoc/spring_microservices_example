@@ -4,8 +4,16 @@ FROM openjdk:17
 LABEL maintainer="Vladislav Zhuravsky <hexhoc@gmail.com>"
 # The application's jar file
 ARG JAR_FILE=build/libs/licensing-service-0.0.1-SNAPSHOT.jar
+
 # Add the application's jar to the container
 COPY ${JAR_FILE} app.jar
+# Startup script that is waiting other service befor start itself
+COPY docker-startup-script.sh docker-startup-script.sh
+
 WORKDIR /
 #execute the application after container is run
-ENTRYPOINT java --add-opens java.base/java.nio.charset=ALL-UNNAMED -jar /app.jar
+ENTRYPOINT ["sh", \
+"/docker-startup-script.sh", \
+"http://configserver:8071/actuator/health", \
+"5", \
+"java --add-opens java.base/java.nio.charset=ALL-UNNAMED -jar /app.jar"]
