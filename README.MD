@@ -14,6 +14,14 @@ application will remain in place, the application itself will be broken down fro
 smaller microservice design, whose pieces can be deployed independently to the cloud. The replatforming involved with
 O-stock can be a “make or break” moment for the company.
 
+## Remote debug:
+1. configserver. Port 9071
+2. eurekaserver. Port 9070
+3. gatewayserver. Port 9072
+4. licensingservice. Port 9180
+5. organizationservice. Port 9081
+
+
 ## development step by step
 
 ### license service
