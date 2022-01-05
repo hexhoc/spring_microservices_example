@@ -10,7 +10,6 @@ eureka:
     serviceUrl:
       defaultZone: http://eurekaserver:8070/eureka/
 
-
 spring:
   profiles:
     active: dev
@@ -40,8 +39,6 @@ spring:
             - RewritePath=/licservice/(?<path>.*), /$\{path}
             # gateway doesn’t forward sensitive HTTP headers like cookie,set-cookie, and authorization to downstream services
             - RemoveRequestHeader= Cookie,Set-Cookie
-
-
 
 management:
   endpoints:
