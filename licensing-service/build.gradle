@@ -40,7 +40,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client', version: '3.1.0'
 
     //RESILIENCE AND CIRCUIT BREAKER
-    implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot2', version: '1.7.1'
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot2', version: '1.7.0'
     implementation('org.springframework.boot:spring-boot-starter-aop')
 
     // https://mvnrepository.com/artifact/org.keycloak/keycloak-spring-boot-starter

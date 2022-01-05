@@ -7,4 +7,4 @@ ARG JAR_FILE=build/libs/licensing-service-0.0.1-SNAPSHOT.jar
 # Add the application's jar to the container
 COPY ${JAR_FILE} app.jar
 #execute the application after container is run
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app.jar","--add-opens java.base/java.nio.charset=ALL-UNNAMED"]

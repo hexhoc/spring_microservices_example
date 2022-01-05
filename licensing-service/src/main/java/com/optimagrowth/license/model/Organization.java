@@ -10,7 +10,7 @@ import javax.persistence.Id;
 
 
 @Getter @Setter @ToString
-@RedisHash("organization")
+@RedisHash("organizations")
 public class Organization extends RepresentationModel<Organization> {
 
     @Id

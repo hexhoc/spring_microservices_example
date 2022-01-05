@@ -16,6 +16,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -37,10 +38,14 @@ import java.util.Locale;
 public class LicenseServiceApplication {
 //TODO Add tests
 
-    @Autowired
-    private ServiceConfig serviceConfig;
+    private final ServiceConfig serviceConfig;
 
     public static final Logger logger = LoggerFactory.getLogger(LicenseServiceApplication.class);
+
+    @Autowired
+    public LicenseServiceApplication(ServiceConfig serviceConfig) {
+        this.serviceConfig = serviceConfig;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(LicenseServiceApplication.class, args);
