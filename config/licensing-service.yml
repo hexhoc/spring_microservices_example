@@ -1,0 +1,86 @@
+# Tells the Config Server to use this value as the symmetric key
+encrypt:
+    key: 'fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo '
+eureka:
+    client:
+        # tells the Spring Eureka client to fetch a local copy of the #registry
+        # caches the registry locally instead of calling the Eureka service with each lookup
+        fetchRegistry: true
+        # Registers the service with Eureka
+        # Is the trigger to tell the organization and the licensing services to register with Eureka
+        registerWithEureka: true
+        serviceUrl:
+            # Sets the location of the Eureka service.
+            defaultZone: http://eurekaserver:8070/eureka/
+    instance:
+        # Registers the IP address of the service rather than the server name.
+        # By default, Eureka registers the services that contact it by hostname. This works well
+        # in a server-based environment, where a service is assigned a DNS-backed hostname.
+        # However, in a container-based deployment (for example, Docker), containers are
+        # started with randomly generated hostnames and no DNS entries for the containers
+        preferIpAddress: true
+example:
+    property: I AM THE DEFAULT
+keycloak:
+    auth-server-url: http://keycloak:8080/auth
+    bearer-only: true
+    credentials:
+        secret: V4BXdHSnhjRl4N0uJhPdGDFhF0N2ZdY1
+    realm: spmia-realm
+    resource: ostock
+    ssl-required: external
+    use-resource-role-mappings: true
+management:
+    endpoints:
+        enabled-by-default: true
+        web:
+            exposure:
+                include: '*'
+#Redis configuration
+redis:
+    port: 6379
+    server: redis
+server:
+    port: 8180
+spring:
+    cloud:
+        stream:
+            bindings:
+                inboundOrgChanges:
+                    content-type: application/json
+                    # NOTICE! inboundOrgChanges it is our custom channel
+                    # The Spring Cloud Stream configuration for consuming  a message
+                    # Maps the input channel to the orgChangeTopic queue
+                    destination: orgChangeTopic
+                    # The group property defines the name of the consumer group that will consume the message.
+                    # The concept of a consumer group is this: we can have multiple services with each
+                    #service having multiple instances listening to the same message queue. We want each
+                    #unique service to process a copy of a message, but we only want one service instance
+                    #within a group of service instances to consume and process a message. The group
+                    #property identifies the consumer group that the service belongs to.
+
+                    # The message is consumed by exactly ONLY ONE licensing service instance because they all share the same consumer group (licensing).
+                    group: licensingGroup
+            kafka:
+                binder:
+                    brokers: kafka
+                    zkNodes: kafka
+    database:
+        driverClassName: org.postgresql.Driver
+    datasource:
+        platform: postgres
+        testWhileIdle: true
+        validationQuery: SELECT 1
+    flyway:
+        enabled: true
+    jpa:
+        database: POSTGRESQL
+        hibernate:
+            ddl-auto: validate
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+        show-sql: true
+    profiles:
+        active: dev

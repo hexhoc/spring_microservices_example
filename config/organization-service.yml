@@ -1,0 +1,73 @@
+# Tells the Config Server to use this value as the symmetric key
+encrypt:
+    key: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
+eureka:
+    client:
+        # tells the Spring Eureka client to fetch a local copy of the #registry
+        # caches the registry locally instead of calling the Eureka service with each lookup
+        fetchRegistry: true
+        # Registers the service with Eureka
+        # Is the trigger to tell the organization and the licensing services to register with Eureka
+        registerWithEureka: true
+        serviceUrl:
+            # Sets the location of the Eureka service.
+            defaultZone: http://eurekaserver:8070/eureka/
+    instance:
+        # Registers the IP address of the service rather than the server name.
+        # By default, Eureka registers the services that contact it by hostname. This works well
+        # in a server-based environment, where a service is assigned a DNS-backed hostname.
+        # However, in a container-based deployment (for example, Docker), containers are
+        # started with randomly generated hostnames and no DNS entries for the containers
+        preferIpAddress: true
+keycloak:
+    auth-server-url: http://keycloak:8080/auth
+    bearer-only: true
+    confidential-port: 0
+    credentials:
+        secret: V4BXdHSnhjRl4N0uJhPdGDFhF0N2ZdY1
+    realm: spmia-realm
+    resource: ostock
+    ssl-required: external
+    use-resource-role-mappings: true
+    # token-audience is not need, specify as false
+    verify-token-audience: false
+management:
+    endpoints:
+        enabled-by-default: true
+        web:
+            exposure:
+                include: '*'
+server:
+    port: 8081
+spring:
+    cloud:
+        stream:
+            bindings:
+                output:
+                    # Provides (hints) the message type that`s sent and received (in this case, JSON)
+                    content-type: application/json
+                    # The Spring Cloud Stream configuration for publishing a message
+                    # channel(query) name
+                    destination: orgChangeTopic
+            kafka:
+                binder:
+                    # These properties provide the network location of Kafka and Zookeeper.
+                    brokers: kafka
+                    zkNodes: kafka
+    database:
+        driverClassName: org.postgresql.Driver
+    datasource:
+        platform: postgres
+        testWhileIdle: true
+        validationQuery: SELECT 1
+    jpa:
+        database: POSTGRESQL
+        hibernate:
+            ddl-auto: validate
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+        show-sql: true
+    profiles:
+        active: dev

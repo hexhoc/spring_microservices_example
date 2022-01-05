@@ -1,0 +1,6 @@
+spring:
+    # DataSource settings: set here your own configurations for the database
+    datasource:
+        password: '{cipher}1515c7968f9d30aa783d5a7eb416e17216a78ffdf6a63a54eb006f5baeee2dd7'
+        url: jdbc:postgresql://localhost:5432/ostock_prod
+        username: postgres

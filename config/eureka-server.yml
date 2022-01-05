@@ -1,0 +1,20 @@
+eureka:
+    # sets the eureka instance hostname
+    client:
+        # When set to false, tells the Eureka service that as it starts, it doesn't need to cache its registry information locally. When
+        # running a Eureka client, you'll want to change this value for the Spring Boot services that are going to register with Eureka.
+        fetch-registry: false
+        # Tells the config server to not register with the eureka service
+        register-with-eureka: false
+        service-url:
+            # Provides the service URL for any client. It is a combination of the eureka.instance.hostname and the server.port attributes
+            defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    instance:
+        hostname: eurekaserver
+    server:
+        # Wait time in ms. When you're testing your service locally, you should use this line because Eureka won't immediately
+        # advertise any services that register with it. By default, it waits 5 minutes to give all of
+        # the services a chance to register with it before advertising them
+        wait-time-in-ms-when-sync-empty: 5
+server:
+    port: 8070
