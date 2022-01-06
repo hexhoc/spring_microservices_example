@@ -177,11 +177,12 @@ O-stock can be a “make or break” moment for the company.
 ### Security. KeyClock
 1. Create new docker container for keyclock image
 2. Open localhost:8080, login and password "admin" and config new realm "spmia-realm"
-3. Create new client "ostock". Access Type = confidential, Service Accounts Enabled = ON, Authorization Enabled = ON
-4. Create two client's roles - USER and ADMIN (not composite)
-5. Create two realm's roles - ostock-admin and ostock-user (composite) relative with client's roles
-6. Create new user, login = hexhoc, password = Vcsdfr13, role = ostock_admin
-7. Create POST query for get access token. Basic auth - username = ostock, password = QMCX3PjFa9nrVObDSi12ISH790vWRfO4 (
+3. Add frontend URL - http://keycloak:8080/auth
+4. Create new client "ostock". Access Type = confidential, Service Accounts Enabled = ON, Authorization Enabled = ON
+5. Create two client's roles - USER and ADMIN (not composite)
+6. Create two realm's roles - ostock-admin and ostock-user (composite) relative with client's roles
+7. Create new user, login = hexhoc, password = Vcsdfr13, role = ostock_admin
+8. Create POST query for get access token. Basic auth - username = ostock, password = QMCX3PjFa9nrVObDSi12ISH790vWRfO4 (
    client's credentials) and body - grant_type = password, username = hexhoc, password = Vcsdfr13
 
    ```

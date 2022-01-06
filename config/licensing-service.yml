@@ -22,7 +22,7 @@ eureka:
 example:
     property: I AM THE DEFAULT
 keycloak:
-    auth-server-url: http://localhost:8080/auth # in prod environment you should use real url
+    auth-server-url: http://keycloak:8080/auth # Do not forget change frontend URL in keylock realm setting
     bearer-only: true
     credentials:
         secret: V4BXdHSnhjRl4N0uJhPdGDFhF0N2ZdY1
