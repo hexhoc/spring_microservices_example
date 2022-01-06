@@ -21,6 +21,60 @@ O-stock can be a “make or break” moment for the company.
 4. licensingservice. Port 9180
 5. organizationservice. Port 9081
 
+## Installation
+
+### Prepare keyCloak
+1. All work with services takes place in containers. Therefore, first, we run the script to build containers - createDockerImages.sh in root of project
+2. When all containers are running, open KeyCloak http://localhost:8080/
+   1. Create new user
+   2. Set user password
+   3. Set user role
+   4. In realm tab set frontend URL - http://keycloak:8080/auth (keycloak it is inner alias in docker container)
+3. Before you start using the service, you need to get a JWT token. Push get request
+   to http://localhost:8080/auth/realms/spmia-realm/protocol/openid-connect/token and copy access_token from response
+   body. This token we will use like bearer authentication token for all request.
+
+### Check gateway routes
+1. For check current health
+```
+http://localhost:8072/actuator/health
+```
+3. For check current routes
+```
+http://localhost:8072/actuator/gateway/routes
+```
+
+4. Changed routes:
+   1. For licensing-service added custom path - licservice
+   2. For organization-service added custom path - orgservice
+   3. If you want to change routes, you can do it in configuration file - gateway-server.yml
+5. Gateway redirect all request automatically (no need any configuration). Request example:
+```
+   http://<gateway_host:port>/<service-name>/<service-resource>
+
+   http://localhost:8072/licservice/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/f2a9c9d4-d2c0-44fa-97fe-724d77173c62/rest
+```
+
+### Create request through gateway
+1. Get organization 
+```
+   http://localhost:8072/orgservice/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3
+```
+2. Get license
+```
+   http://localhost:8072/licservice/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/f2a9c9d4-d2c0-44fa-97fe-724d77173c62/rest
+```
+
+### Create request directly to the service
+1. Get organization
+```
+   http://localhost:8081/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3
+```
+2. Get license
+```
+   http://localhost:8180/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/f2a9c9d4-d2c0-44fa-97fe-724d77173c62/rest
+```
+
 
 ## development step by step
 
@@ -251,7 +305,23 @@ For production use, you should also build your microservice security around the 
    - Limit the attack surface of your microservices by locking down unneeded network ports
 
 ## Message broker
+
 ### Config kafka in organization service
+
+### Description
+
+In order not to contact the organization service every time to obtain an organization, we use **Radis**. But if there
+has been a change in the organization, then it is necessary to remove the old cache of the organization from the **Radis**.
+
+Since there is no need to execute the operation synchronously, we will use **kafka** as a message broker to execute requests
+**asynchronously**.
+
+1. The organization service registers messages about any actions carried out with the organization (GET, POST, PUT,
+   DELETE) in **OrganizationServiceImpl** class, using **simpleSourceBean.publishOrganizationChange()** method.
+2. The licensing service listen all incoming message from kafka and execute it. Using **OrganizationChangeHandler** class
+
+### How to config
+
 Add docker images:
    - kafka
    - zookeeper
@@ -310,16 +380,6 @@ We are work with redis like database, using entity and repository for implement 
 
 
 
-## Installation
-
-1. Use for each project
-   ```
-   gradlew buildDockerImage
-   ``` 
-2. cd docker/ and execute 
-   ```
-   docker-compose up
-   ``` 
 
 
 
