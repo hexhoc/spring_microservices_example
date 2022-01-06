@@ -1,7 +1,7 @@
 #Spring framework implements a hierarchical mechanism for properties. First applied licensing-service.properties and
 #after then licensing-service-prod.properties
 example:
-    gateway: http://gateway-server:8072
+    gateway: http://gatewayserver:8072
     property: I AM PROD
 spring:
     # DataSource settings: set here your own configurations for the database
