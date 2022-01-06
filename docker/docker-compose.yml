@@ -69,7 +69,7 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     volumes:
-      - ./realm-export.json:/opt/jboss/keycloak/realm-export.json
+      - ./config/realm-export.json:/opt/jboss/keycloak/realm-export.json
     command:
       - "-b 0.0.0.0"
       - "-Dkeycloak.import=/opt/jboss/keycloak/realm-export.json"
@@ -81,6 +81,70 @@ services:
       backend:
         aliases:
           - "keycloak"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      # Maps the 9300 port as the cluster communication port
+      - 9300:9300
+      # Maps the 9200 port as the REST communication port
+      - 9200:9200
+    networks:
+      backend:
+        aliases:
+          - "elasticsearch"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: "http://elasticsearch:9300"
+    ports:
+      - 5601:5601
+    networks:
+      backend:
+        aliases:
+          - "kibana"
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.7.0
+    container_name: logstash
+    # Loads the Logstash config from a specific file or directory
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    # Mounts the configuration file in a Logstash running container
+    volumes:
+      - ./config:/etc/logstash/conf.d
+    ports:
+      - "5000:5000"
+    networks:
+      backend:
+        aliases:
+          - "logstash"
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    depends_on:
+      - elasticsearch
+    environment:
+      - STORAGE_TYPE=elasticsearch
+      - "ES_HOSTS=elasticsearch:9300"
+    ports:
+      - "9411:9411"
+    networks:
+      backend:
+        aliases:
+          - "zipkin"
 
   configserver:
     container_name: configserver
@@ -96,6 +160,7 @@ services:
       - database
       - redisserver
       - kafkaserver
+      - logstash
     networks:
       backend:
         aliases:
@@ -113,6 +178,7 @@ services:
     depends_on:
       - database
       - configserver
+      - logstash
     networks:
       backend:
         aliases:
@@ -127,6 +193,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9072
+    depends_on:
+      - logstash
     networks:
       backend:
         aliases:
@@ -149,6 +217,7 @@ services:
     depends_on:
       - database
       - configserver
+      - logstash
     networks:
       backend:
         aliases:
@@ -167,6 +236,7 @@ services:
     depends_on:
       - database
       - configserver
+      - logstash
     networks:
       - backend
 
@@ -181,4 +251,6 @@ volumes:
   pgconf:
     driver: local
   pglog:
+    driver: local
+  esdata1:
     driver: local

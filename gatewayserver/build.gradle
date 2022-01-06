@@ -29,6 +29,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.json/json
     implementation group: 'org.json', name: 'json', version: '20211205'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // LOGGING
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-sleuth
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-sleuth', version: '3.1.0'
+    // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.0.1'
 }
 
 dependencyManagement {

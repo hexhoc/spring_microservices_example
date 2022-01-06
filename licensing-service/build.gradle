@@ -66,6 +66,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis
     implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '2.6.0'
 
+    // LOGGING
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-sleuth
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-sleuth', version: '3.1.0'
+    // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+    implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.0.1'
+
 }
 
 dependencyManagement {

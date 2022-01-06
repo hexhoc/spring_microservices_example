@@ -378,8 +378,34 @@ We are work with redis like database, using entity and repository for implement 
 6. Edit OrganizationRestTemplateClient class to check redis cache before retrieve organization from organization-service
 
 
+## Sleuth, Zipkin and ELK
 
+Because microservices are distributed by nature, trying to debug where a problem occurs can be maddening. The
+distributed nature of the services means that we need to trace one or more transactions across multiple services,
+physical machines, and different data stores, and then try to piece together what exactly is going on.
 
+### How to config
 
+1. Add following dependencies in licensing, config and organization service:
+   - spring-cloud-starter-sleuth
+   - logstash-logback-encoder 
+2. Create and configure logback-spring.xml file in resource folder. In that file we describe that destination for logs will be logstash
+3. Add docker images:
+   - Elasticsearch
+   - Logstash
+     - Create config file logstash.conf with following plugins:
+       - Input. In this section, we specify the tcp plugin for consuming the log data. Next is the port number 5000
+         this is the port that we’ll specify for Logstash later in the docker-compose.yml file.
+       - Filter. We added a mutate filter. This filter adds a manningPublications tag to the  events.
+         A real-world scenario of a possible tag for your services might be the environment where the application runs
+       - Output. specify the output plugin for our Logstash service and send the processed data to the Elasticsearch
+         service running on port 9200
+       
+   - Kibana
+4. Configuring Kibana
+   1. Open http://localhost:5601/ and choose option "Explore on my own"
+   2. We must create an index pattern. Kibana uses a set of index
+      patterns to retrieve the data from an Elasticsearch engine. The index pattern is in
+      charge of telling Kibana which Elasticsearch indexes we want to explore. Use next pattern - logstash-* i
 
 
