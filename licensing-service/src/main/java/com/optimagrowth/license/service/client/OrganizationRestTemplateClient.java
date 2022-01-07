@@ -58,7 +58,7 @@ public class OrganizationRestTemplateClient {
                 // key that you used to register the organization service with Eureka:
                 // http://{applicationid}/v1/organization/{organizationId}
                 restTemplate.exchange(
-                        "http://gateway:8072/organization-service/v1/organization/{organizationId}",
+                        "http://gatewayserver:8072/organization-service/v1/organization/{organizationId}",
                         HttpMethod.GET,
                         null, Organization.class, organizationId);
 
