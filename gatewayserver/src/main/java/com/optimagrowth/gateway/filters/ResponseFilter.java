@@ -28,10 +28,12 @@ public class ResponseFilter {
         return (exchange, chain) -> {
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 // Adds a span to the HTTP response header tmx-correlation-ID in the Spring Cloud Sleuth trace ID
-                String traceId = tracer.currentSpan().context().traceIdString();
-                logger.debug("Adding the correlation id to the outbound headers. {}", traceId);
-                exchange.getResponse().getHeaders().add(FilterUtils.CORRELATION_ID, traceId);
-                logger.debug("Completing outgoing request for {}.", exchange.getRequest().getURI());
+                if (tracer.currentSpan()!=null) {
+                    String traceId = tracer.currentSpan().context().traceIdString();
+                    logger.debug("Adding the correlation id to the outbound headers. {}", traceId);
+                    exchange.getResponse().getHeaders().add(FilterUtils.CORRELATION_ID, traceId);
+                    logger.debug("Completing outgoing request for {}.", exchange.getRequest().getURI());
+                }
             }));
         };
     }
