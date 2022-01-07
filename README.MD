@@ -34,6 +34,7 @@ O-stock can be a “make or break” moment for the company.
    to http://localhost:8080/auth/realms/spmia-realm/protocol/openid-connect/token and copy access_token from response
    body. This token we will use like bearer authentication token for all request.
 
+
 ### Check gateway routes
 1. For check current health
 ```
@@ -74,6 +75,8 @@ http://localhost:8072/actuator/gateway/routes
 ```
    http://localhost:8180/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/f2a9c9d4-d2c0-44fa-97fe-724d77173c62/rest
 ```
+### Configure Kibana
+1. Open kibana http://localhost:5601/ and create index. How to create index described in label "Sleuth, Zipkin and ELK"
 
 
 ## development step by step
@@ -388,7 +391,7 @@ physical machines, and different data stores, and then try to piece together wha
 
 1. Add following dependencies in licensing, config and organization service:
    - spring-cloud-starter-sleuth
-   - logstash-logback-encoder 
+   - logstash-logback-encoder. By default, logback collect log in plaint text, but this library covert data to json 
 2. Create and configure logback-spring.xml file in resource folder. In that file we describe that destination for logs will be logstash
 3. Add docker images:
    - Elasticsearch
@@ -407,5 +410,29 @@ physical machines, and different data stores, and then try to piece together wha
    2. We must create an index pattern. Kibana uses a set of index
       patterns to retrieve the data from an Elasticsearch engine. The index pattern is in
       charge of telling Kibana which Elasticsearch indexes we want to explore. Use next pattern - logstash-* i
+   3. For step 2, we’ll specify a time filter. To do this, we need to select the @timestamp
+      option under the Time Filter Field Name drop-down list.
+   4. Profit. We can now start making requests to our services to see the real-time logs in Kibana.
+5. Searching for Spring Cloud Sleuth trace IDs in Kibana
+   1. Make simple request to get license from service. After that logstash collect some log with specific traceId
+   2. Open Kibana and using filter try to filter logs by traceId (for example: **traceId:d86f625b10c5e70b**)
+   3. For example, we added a tag with the mutate filter in Logstash, and we can use filter by that field also.
+6. Add traceId in response header. If we want to analyze our request, we need to know the traceId of our request. In
+   this step we include traceId in response header.
+   1. Open **ResponseFilter** and inject Tracer. Because the gateway is now Spring Cloud Sleuth–enabled, we can access
+      tracing information from within our ResponseFilter by autowiring in the Tracer class
+   2. Edit **postGlobalFilter** method. Get traceId from tracer and put it in headers response
+   3. Use GET request 
+   ```
+   http://localhost:8072/licservice/v1/organization/d898a142-de44-466c-8c88-9ceb2c2429d3/license/f2a9c9d4-d2c0-44fa-97fe-724d77173c62/rest
+   ```
+   And after check response header "tmx-correlation-id"
+7. Setting up the Spring Cloud Sleuth and Zipkin dependencies
+   1. Add dependency **spring-cloud-sleuth-zipkin** to gateway, organization and licensing service
+   2. Add **spring.zipkin.baseUrl:http://zipkin:9411** in configuration files for following services: gateway, licensing and organization
+   3. Add our own trace span. We want to trace our request to redis. Add trace span in OrganizationRestTemplateClient.checkRedisCache()
+   4. Add our own trace span. We want to trace our request to redis.
+   5. And now we can make request to license and after look in zipkin (http://localhost:9411/zipkin/) and compare how fast request to redid and request to db
+
 
 

@@ -1,5 +1,7 @@
 package com.example.organizationservice.service.impl;
 
+import brave.ScopedSpan;
+import brave.Tracer;
 import com.example.organizationservice.events.ActionEnum;
 import com.example.organizationservice.events.source.SimpleSourceBean;
 import com.example.organizationservice.model.Organization;
@@ -20,17 +22,35 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private final OrganizationRepository repository;
     private final SimpleSourceBean simpleSourceBean;
+    private final Tracer tracer;
 
     @Autowired
-    public OrganizationServiceImpl(OrganizationRepository repository, SimpleSourceBean simpleSourceBean) {
+    public OrganizationServiceImpl(OrganizationRepository repository,
+                                   SimpleSourceBean simpleSourceBean,
+                                   Tracer tracer) {
         this.repository = repository;
         this.simpleSourceBean = simpleSourceBean;
+        this.tracer = tracer;
     }
 
     public Organization findById(String organizationId) {
-        Optional<Organization> opt = repository.findById(organizationId);
-        simpleSourceBean.publishOrganizationChange(ActionEnum.GET.toString(), organizationId);
-        return opt.orElse(null);
+        Optional<Organization> opt = null;
+        ScopedSpan newSpan = tracer.startScopedSpan("getOrgDBCall");
+        try {
+            opt = repository.findById(organizationId);
+            simpleSourceBean.publishOrganizationChange(ActionEnum.GET.toString(), organizationId);
+            if (!opt.isPresent()) {
+                String message = String.format("Unable to find an organization with the Organization id %s", organizationId);
+                logger.error(message);
+                throw new IllegalArgumentException(message);
+            }
+            logger.debug("Retrieving Organization Info: " + opt.get().toString());
+        }finally {
+            newSpan.tag("peer.service", "postgres");
+            newSpan.annotate("Client received");
+            newSpan.finish();
+        }
+        return opt.get();
     }
 
     public Organization create(Organization organization){

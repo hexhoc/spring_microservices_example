@@ -43,6 +43,8 @@ redis:
 server:
     port: 8180
 spring:
+    zipkin:
+        baseUrl: http://zipkin:9411
     cloud:
         stream:
             bindings:

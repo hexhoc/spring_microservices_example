@@ -53,7 +53,8 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-sleuth', version: '3.1.0'
     // https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.0.1'
-
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-sleuth-zipkin
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-sleuth-zipkin', version: '3.1.0'
 }
 
 dependencyManagement {

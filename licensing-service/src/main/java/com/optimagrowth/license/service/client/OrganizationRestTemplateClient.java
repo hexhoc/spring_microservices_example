@@ -1,5 +1,7 @@
 package com.optimagrowth.license.service.client;
 
+import brave.ScopedSpan;
+import brave.Tracer;
 import com.optimagrowth.license.config.ServiceConfig;
 import com.optimagrowth.license.repository.OrganizationRedisRepository;
 import com.optimagrowth.license.util.UserContext;
@@ -22,18 +24,19 @@ public class OrganizationRestTemplateClient {
     // uses whatever is passed in as the server name as the key to query the Load Balancer for
     // an instance of a service
     private final RestTemplate restTemplate;
-    private final ServiceConfig serviceConfig;
     private final OrganizationRedisRepository redisRepository;
+    private final Tracer tracer;
 
     private static final Logger logger = LoggerFactory.getLogger(OrganizationRestTemplateClient.class);
 
     @Autowired
     public OrganizationRestTemplateClient(@Qualifier("keycloakRestTemplate") RestTemplate restTemplate,
-                                          ServiceConfig serviceConfig,
-                                          OrganizationRedisRepository redisRepository) {
+                                          OrganizationRedisRepository redisRepository,
+                                          Tracer tracer) {
         this.restTemplate = restTemplate;
-        this.serviceConfig = serviceConfig;
         this.redisRepository = redisRepository;
+        // Tracer accesses the Spring Cloud Sleuth trace information.
+        this.tracer = tracer;
     }
 
     public Organization getOrganization(String organizationId){
@@ -55,7 +58,7 @@ public class OrganizationRestTemplateClient {
                 // key that you used to register the organization service with Eureka:
                 // http://{applicationid}/v1/organization/{organizationId}
                 restTemplate.exchange(
-                        serviceConfig.getGateway()+"/organization-service/v1/organization/{organizationId}",
+                        "http://gateway:8072/organization-service/v1/organization/{organizationId}",
                         HttpMethod.GET,
                         null, Organization.class, organizationId);
 
@@ -70,11 +73,21 @@ public class OrganizationRestTemplateClient {
 
 
     private Organization checkRedisCache(String organizationId) {
+        // Use our own span to trace redis check request
+        // Creates a custom span called readLicensingDataFromRedis
+        ScopedSpan newSpan = tracer.startScopedSpan("readLicensingDataFromRedis");
         try {
             return redisRepository.findById(organizationId).orElse(null);
         }catch (Exception ex){
             logger.error("Error encountered while trying to retrieve organization {} check Redis Cache.  Exception {}", organizationId, ex);
             return null;
+        }finally {
+            // Adds tag information to the span and names the service that Zipkin will capture
+            newSpan.tag("peer.service", "redis");
+            newSpan.annotate("Client received");
+            // Closes and finishes the span. If this is not done, we’ll get an error message in the
+            // log saying that a span was left open.
+            newSpan.finish();
         }
     }
 

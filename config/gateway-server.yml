@@ -13,6 +13,8 @@ eureka:
 spring:
   profiles:
     active: dev
+  zipkin:
+    baseUrl: http://zipkin:9411
   # Enables the gateway to create routes based on services registered with service discovery
   # (automatically create routes using service id from service discovery)
   cloud:
