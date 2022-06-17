@@ -1,3 +1,5 @@
+cd "./microservices" || exit
+
 cd "./configserver" || exit
 sh gradlew buildDockerImage
 
@@ -13,8 +15,8 @@ sh gradlew buildDockerImage
 cd "../gatewayserver" || exit
 sh gradlew buildDockerImage
 
-cd "../docker" || exit
+cd "../../docker" || exit
 
-docker-compose stop
-docker-compose rm -f
-docker-compose up --build -d
+docker compose stop
+docker compose rm -f
+docker compose up --build -d
